@@ -1,33 +1,29 @@
-import { useEffect, useState } from 'react'
-import { supabase } from './supabaseClient'
+import { useEffect, useState } from "react";
+import { supabase } from "./supabaseClient";
 
 function App() {
-  const [status, setStatus] = useState<string>('Checking Supabase connection...')
+  const [status, setStatus] = useState("Checking Supabase connection...");
 
   useEffect(() => {
     const checkConnection = async () => {
-      const { error } = await supabase
-        .from('company_registry')
-        .select('company_name')
-        .limit(1)
-
+      const { error } = await supabase.from("companies").select("id").limit(1);
       if (error) {
-        console.error(error)
-        setStatus('Connection failed')
+        setStatus("❌ Supabase connection failed");
+        console.error(error);
       } else {
-        setStatus('Connected to Supabase successfully')
+        setStatus("✅ Supabase connected successfully");
       }
-    }
+    };
 
-    checkConnection()
-  }, [])
+    checkConnection();
+  }, []);
 
   return (
-    <div style={{ padding: '40px', fontFamily: 'Arial' }}>
-      <h2>Atomity Market Intelligence Tool</h2>
+    <div style={{ padding: "40px", fontFamily: "sans-serif" }}>
+      <h1>Market Research Tool</h1>
       <p>{status}</p>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
