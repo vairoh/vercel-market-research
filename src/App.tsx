@@ -6,7 +6,7 @@ function App() {
 
   useEffect(() => {
     const checkConnection = async () => {
-      const { error } = await supabase.from("company_registry").select("id").limit(1);
+      const { error } = await supabase.from("company_registry").select("*").limit(1);
       if (error) {
         setStatus("❌ Supabase connection failed");
         console.error(error);
