@@ -3,13 +3,46 @@ import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 
 function Login() {
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const sendMagicLink = async () => {
+    setError(null);
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      setSent(true);
+    }
+  };
+
   return (
-    <div style={{ padding: "40px" }}>
+    <div style={{ padding: "40px", maxWidth: "400px" }}>
       <h2>Login</h2>
-      <p>Login page placeholder</p>
+
+      {sent ? (
+        <p>✅ Check your email for the login link.</p>
+      ) : (
+        <>
+          <input
+            type="email"
+            placeholder="you@company.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ width: "100%", padding: "8px", marginBottom: "12px" }}
+          />
+          <button onClick={sendMagicLink}>Send magic link</button>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+        </>
+      )}
     </div>
   );
 }
+
 
 function Reserve() {
   return (
