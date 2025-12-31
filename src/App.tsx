@@ -11,7 +11,11 @@ function Login() {
     setError(null);
     const { error } = await supabase.auth.signInWithOtp({
       email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/reserve`,
+      },
     });
+
 
     if (error) {
       setError(error.message);
