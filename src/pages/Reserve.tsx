@@ -113,49 +113,70 @@ export default function ReservePage() {
         paddingBottom: '1rem',
         borderBottom: '1px solid #000000'
       }}>
-        <h2 style={{ margin: 0, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.2em', fontWeight: 800 }}>Terminal // Reserve</h2>
+        <h2 style={{ margin: 0, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 800 }}>Company Research Assignment</h2>
         <button 
           onClick={onLogout}
           style={{ 
             background: 'transparent', 
-            color: '#000000',
+            color: '#71717a',
             border: 'none',
-            fontSize: '0.65rem',
+            fontSize: '0.7rem',
             padding: 0,
-            textDecoration: 'underline',
+            textDecoration: 'none',
             minWidth: 'auto',
             width: 'auto',
-            letterSpacing: '0.1em',
-            fontWeight: 800
+            letterSpacing: '0.05em',
+            fontWeight: 600,
+            cursor: 'pointer'
           }}
         >
-          DISCONNECT_SYSTEM
+          Sign Out
         </button>
       </header>
 
       <div className="card" style={{ borderRadius: '16px' }}>
-        <p style={{ marginBottom: '2.5rem', fontSize: '0.8rem', letterSpacing: '0.05em', fontWeight: 500, lineHeight: 1.6 }}>
-          SECURE A COMPANY IDENTIFIER TO INITIALIZE DEEP MARKET ANALYSIS. 
-          UPON SUCCESSFUL RESERVATION, THIS IDENTIFIER WILL REMAIN LOCKED TO YOUR 
-          TERMINAL FOR A PERIOD OF 24 HOURS. IF NO ACTIVITY IS DETECTED WITHIN 
-          THIS TIMEFRAME, THE SYSTEM WILL RELEASE THE IDENTIFIER FOR PUBLIC ACQUISITION.
-        </p>
+        <div style={{ marginBottom: '2.5rem' }}>
+          <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', fontWeight: 700, color: '#000000' }}>
+            Initialize Research Session
+          </h3>
+          <p style={{ fontSize: '0.85rem', letterSpacing: '0.01em', fontWeight: 400, lineHeight: 1.6, color: '#3f3f46' }}>
+            To begin your analysis, please specify the company you will be researching. 
+            Your reservation ensures exclusive access to this data stream for the next 24 hours. 
+            Please note that if no progress is detected within this timeframe, the system will 
+            automatically release the company for other researchers to acquire.
+          </p>
+        </div>
 
         <div style={{ display: "flex", justifyContent: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <input
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            placeholder="SYSTEM_QUERY: [ENTER_NAME]"
-            style={{ flex: 1, minWidth: '280px', borderRadius: '8px' }}
-            disabled={loading || !!reserved}
-          />
-          <button
-            onClick={onReserve}
-            disabled={loading || !!reserved}
-            style={{ width: 'auto', borderRadius: '30px' }}
-          >
-            {loading ? "PROCESS..." : "SECURE_ID"}
-          </button>
+          <div style={{ flex: 1, minWidth: '280px' }}>
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '0.5rem', 
+              fontSize: '0.65rem', 
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              color: '#71717a'
+            }}>
+              Target Company
+            </label>
+            <input
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="Name of the company you will research"
+              style={{ width: '100%', borderRadius: '8px' }}
+              disabled={loading || !!reserved}
+            />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <button
+              onClick={onReserve}
+              disabled={loading || !!reserved}
+              style={{ width: 'auto', borderRadius: '30px', height: '42px' }}
+            >
+              {loading ? "Assigning..." : "Reserve Company"}
+            </button>
+          </div>
         </div>
 
         {errorMsg && (
