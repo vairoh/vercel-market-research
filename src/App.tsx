@@ -265,7 +265,7 @@ function Reserve() {
 
         {reserved && (
           <div style={{ 
-            marginTop: 5rem, 
+            marginTop: '5rem', 
             padding: '3rem', 
             border: "2px solid #000000",
             position: 'relative'
