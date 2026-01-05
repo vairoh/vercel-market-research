@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -102,7 +103,7 @@ export default function ReservePage() {
     }} className="animate-fade-in">
       <div className="logo-container">
         <h1>ATOMITY</h1>
-        <div className="tagline">Market intelligence / Market Analysis</div>
+        <div className="tagline">Market & Competitive Intelligence</div>
       </div>
 
       <header style={{ 
