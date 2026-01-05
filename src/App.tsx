@@ -32,7 +32,7 @@ function Login() {
       </div>
       
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
+        <div className="card" style={{ width: '100%', maxWidth: '400px', borderRadius: '16px' }}>
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <h2 style={{ margin: 0, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
               Authentication
@@ -45,7 +45,8 @@ function Login() {
               textAlign: 'center', 
               padding: '2rem', 
               border: '1px solid #000000',
-              color: '#000000'
+              color: '#000000',
+              borderRadius: '12px'
             }}>
               <p style={{ color: 'inherit', margin: 0, fontWeight: 600, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Access link dispatched to inbox.
@@ -70,9 +71,10 @@ function Login() {
                   placeholder="name@domain.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  style={{ borderRadius: '8px' }}
                 />
               </div>
-              <button onClick={sendMagicLink} style={{ width: 'auto' }}>
+              <button onClick={sendMagicLink} style={{ width: 'auto', borderRadius: '30px' }}>
                 Send Link
               </button>
               {error && (
@@ -219,7 +221,7 @@ function Reserve() {
           VALIDATION PERIOD: 48H OF INACTIVITY.
         </p>
 
-        <div style={{ display: "flex", gap: 0, justifyContent: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: "flex", justifyContent: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <input
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
