@@ -12,142 +12,237 @@ type ReserveResult = {
 
 export default function ReservePage() {
   const navigate = useNavigate();
-
-  const [sessionEmail, setSessionEmail] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-  const [result, setResult] = useState<ReserveResult | null>(null);
-
-  const canSubmit = useMemo(() => companyName.trim().length >= 2, [companyName]);
+  const [reserved, setReserved] = useState<ReserveResult | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    const init = async () => {
+    const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
-      const email = data.session?.user?.email ?? null;
-
       if (!data.session) {
         navigate("/login");
-        return;
       }
-
-      setSessionEmail(email);
     };
-
-    init();
+    checkSession();
   }, [navigate]);
 
-  const reserve = async () => {
-    setMsg(null);
-    setResult(null);
+  // keep-alive every 60s once reserved
+  useEffect(() => {
+    if (!reserved?.company_key) return;
 
-    if (!canSubmit) {
-      setMsg("Enter a company name.");
+    const interval = window.setInterval(async () => {
+      const { error } = await supabase.rpc("keep_alive_company", {
+        p_company_key: reserved.company_key,
+      });
+
+      if (error) {
+        console.error("keep_alive_company error:", error);
+        setInfoMsg("KEEP_ALIVE_FAILURE: SYSTEM_DISCONNECT_RISK");
+      } else {
+        setInfoMsg("SYSTEM_STATUS: CONNECTION_STABLE");
+      }
+    }, 60_000);
+
+    return () => window.clearInterval(interval);
+  }, [reserved?.company_key]);
+
+  const onReserve = async () => {
+    setErrorMsg(null);
+    setInfoMsg(null);
+
+    const name = companyName.trim();
+    if (!name) {
+      setErrorMsg("VALIDATION_ERROR: IDENTIFIER_REQUIRED");
       return;
     }
 
     setLoading(true);
     try {
-      const name = companyName.trim();
-
       const { data, error } = await supabase.rpc("reserve_company", {
         p_company_name: name,
       });
 
-      if (error) throw error;
+      if (error) {
+        setErrorMsg(error.message);
+        setReserved(null);
+        return;
+      }
 
-      // Supabase RPC returns array for "returns table"
       const row = Array.isArray(data) ? data[0] : data;
-      if (!row) throw new Error("No data returned from reserve_company().");
+      if (!row?.company_key) {
+        setErrorMsg("RESERVATION_FAILURE: NULL_IDENTIFIER_RETURNED");
+        setReserved(null);
+        return;
+      }
 
-      setResult(row as ReserveResult);
-      setMsg("Reserved successfully. You can now continue research for this company.");
-    } catch (err: any) {
-      console.error(err);
-      setMsg(err?.message || "Reservation failed.");
+      setReserved(row);
+      setInfoMsg("RESERVATION_SUCCESS: SYSTEM_RESOURCE_LOCKED");
+    } catch (e: any) {
+      console.error(e);
+      setErrorMsg(e?.message ?? "UNKNOWN_SYSTEM_FAULT");
+      setReserved(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const signOut = async () => {
+  const onLogout = async () => {
     await supabase.auth.signOut();
     navigate("/login");
   };
 
   return (
-    <div style={{ maxWidth: 720, margin: "70px auto", fontFamily: "sans-serif", padding: 24 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-        <h1 style={{ margin: 0 }}>Reserve a company</h1>
-        <button
-          onClick={signOut}
-          style={{
-            padding: "10px 12px",
-            borderRadius: 10,
-            border: "1px solid #111",
-            background: "#fff",
-            cursor: "pointer",
-            fontWeight: 600,
-          }}
-        >
-          Sign out
-        </button>
+    <div style={{ 
+      maxWidth: '1000px', 
+      margin: '0 auto', 
+      padding: '20px',
+      minHeight: '100vh'
+    }} className="animate-fade-in">
+      <div className="logo-container">
+        <h1>ATOMITY</h1>
+        <div className="tagline">Market intelligence / Market Analysis</div>
       </div>
 
-      <p style={{ opacity: 0.8, marginTop: 10 }}>
-        Logged in as: <b>{sessionEmail ?? "..."}</b>
-      </p>
-
-      <div style={{ marginTop: 18 }}>
-        <label style={{ display: "block", marginBottom: 8 }}>Company name</label>
-        <input
-          value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
-          placeholder="SAP SE"
-          style={{
-            width: "100%",
-            padding: "12px 14px",
-            borderRadius: 10,
-            border: "1px solid #ccc",
-            outline: "none",
-          }}
-        />
-
-        <button
-          onClick={reserve}
-          disabled={loading || !canSubmit}
-          style={{
-            marginTop: 12,
-            width: "100%",
-            padding: "12px 14px",
-            borderRadius: 10,
-            border: "none",
-            cursor: loading ? "not-allowed" : "pointer",
-            background: "#111",
-            color: "#fff",
-            fontWeight: 700,
-            opacity: loading || !canSubmit ? 0.8 : 1,
+      <header style={{ 
+        display: "flex", 
+        justifyContent: "space-between", 
+        alignItems: "center",
+        marginBottom: '4rem',
+        paddingBottom: '1rem',
+        borderBottom: '1px solid #000000'
+      }}>
+        <h2 style={{ margin: 0, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.2em', fontWeight: 800 }}>Terminal // Reserve</h2>
+        <button 
+          onClick={onLogout}
+          style={{ 
+            background: 'transparent', 
+            color: '#000000',
+            border: 'none',
+            fontSize: '0.65rem',
+            padding: 0,
+            textDecoration: 'underline',
+            minWidth: 'auto',
+            width: 'auto',
+            letterSpacing: '0.1em',
+            fontWeight: 800
           }}
         >
-          {loading ? "Reserving..." : "Reserve this company"}
+          DISCONNECT_SYSTEM
         </button>
+      </header>
+
+      <div className="card" style={{ borderRadius: '16px' }}>
+        <p style={{ marginBottom: '2.5rem', fontSize: '0.8rem', letterSpacing: '0.05em', fontWeight: 500, lineHeight: 1.6 }}>
+          SECURE A COMPANY IDENTIFIER TO INITIALIZE DEEP MARKET ANALYSIS. 
+          UPON SUCCESSFUL RESERVATION, THIS IDENTIFIER WILL REMAIN LOCKED TO YOUR 
+          TERMINAL FOR A PERIOD OF 24 HOURS. IF NO ACTIVITY IS DETECTED WITHIN 
+          THIS TIMEFRAME, THE SYSTEM WILL RELEASE THE IDENTIFIER FOR PUBLIC ACQUISITION.
+        </p>
+
+        <div style={{ display: "flex", justifyContent: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <input
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            placeholder="SYSTEM_QUERY: [ENTER_NAME]"
+            style={{ flex: 1, minWidth: '280px', borderRadius: '8px' }}
+            disabled={loading || !!reserved}
+          />
+          <button
+            onClick={onReserve}
+            disabled={loading || !!reserved}
+            style={{ width: 'auto', borderRadius: '30px' }}
+          >
+            {loading ? "PROCESS..." : "SECURE_ID"}
+          </button>
+        </div>
+
+        {errorMsg && (
+          <div style={{ 
+            marginTop: 32, 
+            padding: 16, 
+            border: "1px solid #ef4444",
+            color: '#ef4444',
+            fontSize: '0.7rem',
+            fontFamily: 'JetBrains Mono',
+            textTransform: 'uppercase',
+            borderRadius: '8px'
+          }}>
+            ERROR_LOG: {errorMsg}
+          </div>
+        )}
+
+        {infoMsg && (
+          <div style={{ 
+            marginTop: 32, 
+            padding: 16, 
+            border: "1px solid #000000",
+            fontSize: '0.7rem',
+            fontFamily: 'JetBrains Mono',
+            textTransform: 'uppercase',
+            borderRadius: '8px'
+          }}>
+            SYSTEM_STATUS: {infoMsg}
+          </div>
+        )}
+
+        {reserved && (
+          <div style={{ 
+            marginTop: '5rem', 
+            padding: '3rem', 
+            border: "2px solid #000000",
+            position: 'relative',
+            borderRadius: '16px'
+          }}>
+            <div style={{ 
+              position: 'absolute', 
+              top: '-12px', 
+              left: '24px', 
+              background: '#fff', 
+              padding: '0 12px',
+              fontSize: '0.7rem',
+              fontWeight: 900,
+              letterSpacing: '0.25em'
+            }}>
+              SECURED_DATA_STREAM
+            </div>
+            
+            <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#000000', letterSpacing: '-0.03em', textTransform: 'uppercase' }}>
+              {reserved.company_name}
+            </div>
+            
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+              gap: 40,
+              marginTop: 40,
+              paddingTop: 40,
+              borderTop: '1px solid #000000'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.6rem', color: '#71717a', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 800 }}>Protocol // UID</div>
+                <code style={{ fontSize: '0.9rem', background: 'transparent', border: 'none', padding: 0 }}>{reserved.company_key}</code>
+              </div>
+              <div>
+                <div style={{ fontSize: '0.6rem', color: '#71717a', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 800 }}>Creation // UTC</div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>
+                  {new Date(reserved.reserved_at).toISOString().split('T')[0]}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+              <button 
+                onClick={() => navigate(`/research?company_key=${reserved.company_key}`)}
+                style={{ width: 'auto', borderRadius: '30px', padding: '1rem 3rem' }}
+              >
+                Continue to Research
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-
-      {msg && (
-        <div style={{ marginTop: 14, padding: 12, borderRadius: 10, background: "#f6f6f6" }}>
-          {msg}
-        </div>
-      )}
-
-      {result && (
-        <div style={{ marginTop: 14, padding: 14, borderRadius: 12, border: "1px solid #ddd" }}>
-          <div><b>company_key:</b> {result.company_key}</div>
-          <div><b>company_name:</b> {result.company_name}</div>
-          <div><b>reserved_by:</b> {result.reserved_by}</div>
-          <div><b>reserved_at:</b> {result.reserved_at}</div>
-          <div><b>last_activity_at:</b> {result.last_activity_at}</div>
-        </div>
-      )}
     </div>
   );
 }
