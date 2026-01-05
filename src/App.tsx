@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 
@@ -98,6 +98,7 @@ function Login() {
 
 
 function Reserve() {
+  const navigate = useNavigate();
   const [companyName, setCompanyName] = useState("");
   const [loading, setLoading] = useState(false);
   const [reserved, setReserved] = useState<{
@@ -121,9 +122,9 @@ function Reserve() {
 
       if (error) {
         console.error("keep_alive_company error:", error);
-        setInfoMsg("⚠️ Keep-alive failed (check console)");
+        setInfoMsg("KEEP_ALIVE_FAILURE: SYSTEM_DISCONNECT_RISK");
       } else {
-        setInfoMsg("✅ Reservation active (auto keep-alive running)");
+        setInfoMsg("SYSTEM_STATUS: CONNECTION_STABLE");
       }
     }, 60_000);
 
@@ -136,7 +137,7 @@ function Reserve() {
 
     const name = companyName.trim();
     if (!name) {
-      setErrorMsg("Please enter a company name.");
+      setErrorMsg("VALIDATION_ERROR: IDENTIFIER_REQUIRED");
       return;
     }
 
@@ -155,16 +156,16 @@ function Reserve() {
       // reserve_company returns a table (array). Take first row.
       const row = Array.isArray(data) ? data[0] : data;
       if (!row?.company_key) {
-        setErrorMsg("Reservation failed (no company_key returned).");
+        setErrorMsg("RESERVATION_FAILURE: NULL_IDENTIFIER_RETURNED");
         setReserved(null);
         return;
       }
 
       setReserved(row);
-      setInfoMsg("Company secured successfully. Research phase initialized.");
+      setInfoMsg("RESERVATION_SUCCESS: SYSTEM_RESOURCE_LOCKED");
     } catch (e: any) {
       console.error(e);
-      setErrorMsg(e?.message ?? "Unknown system error");
+      setErrorMsg(e?.message ?? "UNKNOWN_SYSTEM_FAULT");
       setReserved(null);
     } finally {
       setLoading(false);
@@ -215,10 +216,12 @@ function Reserve() {
         </button>
       </header>
 
-      <div className="card">
+      <div className="card" style={{ borderRadius: '16px' }}>
         <p style={{ marginBottom: '2.5rem', fontSize: '0.8rem', letterSpacing: '0.05em', fontWeight: 500, lineHeight: 1.6 }}>
           SECURE A COMPANY IDENTIFIER TO INITIALIZE DEEP MARKET ANALYSIS. 
-          VALIDATION PERIOD: 48H OF INACTIVITY.
+          UPON SUCCESSFUL RESERVATION, THIS IDENTIFIER WILL REMAIN LOCKED TO YOUR 
+          TERMINAL FOR A PERIOD OF 24 HOURS. IF NO ACTIVITY IS DETECTED WITHIN 
+          THIS TIMEFRAME, THE SYSTEM WILL RELEASE THE IDENTIFIER FOR PUBLIC ACQUISITION.
         </p>
 
         <div style={{ display: "flex", justifyContent: 'center', flexWrap: 'wrap', gap: '1rem' }}>
@@ -226,13 +229,13 @@ function Reserve() {
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
             placeholder="SYSTEM_QUERY: [ENTER_NAME]"
-            style={{ flex: 1, minWidth: '280px' }}
+            style={{ flex: 1, minWidth: '280px', borderRadius: '8px' }}
             disabled={loading || !!reserved}
           />
           <button
             onClick={onReserve}
             disabled={loading || !!reserved}
-            style={{ width: 'auto' }}
+            style={{ width: 'auto', borderRadius: '30px' }}
           >
             {loading ? "PROCESS..." : "SECURE_ID"}
           </button>
@@ -246,7 +249,8 @@ function Reserve() {
             color: '#ef4444',
             fontSize: '0.7rem',
             fontFamily: 'JetBrains Mono',
-            textTransform: 'uppercase'
+            textTransform: 'uppercase',
+            borderRadius: '8px'
           }}>
             ERROR_LOG: {errorMsg}
           </div>
@@ -259,7 +263,8 @@ function Reserve() {
             border: "1px solid #000000",
             fontSize: '0.7rem',
             fontFamily: 'JetBrains Mono',
-            textTransform: 'uppercase'
+            textTransform: 'uppercase',
+            borderRadius: '8px'
           }}>
             SYSTEM_STATUS: {infoMsg}
           </div>
@@ -270,7 +275,8 @@ function Reserve() {
             marginTop: '5rem', 
             padding: '3rem', 
             border: "2px solid #000000",
-            position: 'relative'
+            position: 'relative',
+            borderRadius: '16px'
           }}>
             <div style={{ 
               position: 'absolute', 
@@ -307,6 +313,15 @@ function Reserve() {
                   {new Date(reserved.reserved_at).toISOString().split('T')[0]}
                 </div>
               </div>
+            </div>
+
+            <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+              <button 
+                onClick={() => navigate(`/research?company_key=${reserved.company_key}`)}
+                style={{ width: 'auto', borderRadius: '30px', padding: '1rem 3rem' }}
+              >
+                Continue to Research
+              </button>
             </div>
           </div>
         )}
