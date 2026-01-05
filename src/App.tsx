@@ -25,66 +25,70 @@ function Login() {
   };
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      minHeight: '100vh',
-      padding: '20px' 
-    }}>
-      <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h2 style={{ margin: 0, fontSize: '2rem' }}>Welcome</h2>
-          <p>Sign in to your account</p>
-        </div>
+    <div style={{ minHeight: '100vh', padding: '20px' }} className="animate-fade-in">
+      <div className="logo-container">
+        <h1>ATOMITY</h1>
+        <div className="tagline">Market intelligence / Market Analysis</div>
+      </div>
+      
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <h2 style={{ margin: 0, fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              Authentication
+            </h2>
+            <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>Sign in to access the analysis</p>
+          </div>
 
-        {sent ? (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '2rem', 
-            background: '#f0fdf4', 
-            borderRadius: '12px',
-            border: '1px solid #bbf7d0',
-            color: '#166534'
-          }}>
-            <p style={{ color: 'inherit', margin: 0, fontWeight: 500 }}>
-              ✅ Check your email for the magic link.
-            </p>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                fontSize: '0.875rem', 
-                fontWeight: 500,
-                color: 'var(--text-secondary)'
-              }}>
-                Email Address
-              </label>
-              <input
-                type="email"
-                placeholder="you@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <button onClick={sendMagicLink} style={{ width: '100%', padding: '0.875rem' }}>
-              Send magic link
-            </button>
-            {error && (
-              <p style={{ 
-                color: '#ef4444', 
-                fontSize: '0.875rem', 
-                textAlign: 'center',
-                margin: 0 
-              }}>
-                {error}
+          {sent ? (
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '2rem', 
+              border: '1px solid #ffffff',
+              color: '#ffffff'
+            }}>
+              <p style={{ color: 'inherit', margin: 0, fontWeight: 500, fontSize: '0.875rem' }}>
+                Check your email for the access link.
               </p>
-            )}
-          </div>
-        )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+              <div>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '0.75rem', 
+                  fontSize: '0.7rem', 
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  color: 'var(--text-secondary)'
+                }}>
+                  Your Email
+                </label>
+                <input
+                  type="email"
+                  placeholder="name@domain.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <button onClick={sendMagicLink} style={{ width: '100%' }}>
+                Send Link
+              </button>
+              {error && (
+                <p style={{ 
+                  color: '#ef4444', 
+                  fontSize: '0.75rem', 
+                  textAlign: 'center',
+                  fontFamily: 'JetBrains Mono',
+                  margin: 0 
+                }}>
+                  {error}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -155,10 +159,10 @@ function Reserve() {
       }
 
       setReserved(row);
-      setInfoMsg("✅ Reserved successfully. You can now continue the research.");
+      setInfoMsg("Company secured successfully. Research phase initialized.");
     } catch (e: any) {
       console.error(e);
-      setErrorMsg(e?.message ?? "Unknown error");
+      setErrorMsg(e?.message ?? "Unknown system error");
       setReserved(null);
     } finally {
       setLoading(false);
@@ -171,126 +175,129 @@ function Reserve() {
 
   return (
     <div style={{ 
-      maxWidth: '800px', 
+      maxWidth: '1000px', 
       margin: '0 auto', 
-      padding: '40px 20px',
+      padding: '20px',
       minHeight: '100vh'
-    }}>
+    }} className="animate-fade-in">
+      <div className="logo-container">
+        <h1>ATOMITY</h1>
+        <div className="tagline">Market intelligence / Market Analysis</div>
+      </div>
+
       <header style={{ 
         display: "flex", 
         justifyContent: "space-between", 
         alignItems: "center",
-        marginBottom: '3rem'
+        marginBottom: '4rem',
+        paddingBottom: '1rem',
+        borderBottom: '1px solid var(--border-color)'
       }}>
-        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Reserve Company</h2>
+        <h2 style={{ margin: 0, fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Terminal / Reserve</h2>
         <button 
           onClick={onLogout}
           style={{ 
             background: 'transparent', 
-            color: 'var(--text-secondary)',
-            border: '1px solid var(--border-color)',
-            fontSize: '0.875rem'
+            color: '#ffffff',
+            border: 'none',
+            fontSize: '0.7rem',
+            padding: 0,
+            textDecoration: 'underline'
           }}
         >
-          Logout
+          Disconnect
         </button>
       </header>
 
       <div className="card">
-        <p style={{ marginBottom: '1.5rem', fontSize: '1.125rem' }}>
-          Secure a company for your research. Reservations last for 48 hours of inactivity.
+        <p style={{ marginBottom: '2.5rem', fontSize: '0.875rem', letterSpacing: '0.05em' }}>
+          Secure a company identifier to begin deep market analysis. Valid for 48h.
         </p>
 
-        <div style={{ display: "flex", gap: 12 }}>
+        <div style={{ display: "flex", gap: 0 }}>
           <input
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
-            placeholder="Enter company name (e.g., Apple Inc.)"
-            style={{ flex: 1 }}
+            placeholder="SYSTEM_QUERY: [ENTER COMPANY NAME]"
+            style={{ flex: 1, borderRight: 'none' }}
             disabled={loading || !!reserved}
           />
           <button
             onClick={onReserve}
             disabled={loading || !!reserved}
-            style={{ whiteSpace: 'nowrap', padding: '0 2rem' }}
+            style={{ whiteSpace: 'nowrap', padding: '0 3rem' }}
           >
-            {loading ? "Reserving..." : "Reserve Now"}
+            {loading ? "Processing..." : "Secure"}
           </button>
         </div>
 
         {errorMsg && (
           <div style={{ 
-            marginTop: 20, 
+            marginTop: 32, 
             padding: 16, 
-            background: "#fef2f2", 
-            border: "1px solid #fee2e2",
-            borderRadius: '8px',
-            color: '#991b1b',
-            fontSize: '0.875rem'
+            border: "1px solid #ef4444",
+            color: '#ef4444',
+            fontSize: '0.75rem',
+            fontFamily: 'JetBrains Mono'
           }}>
-            <span style={{ fontWeight: 600 }}>Error:</span> {errorMsg}
+            ERROR_LOG: {errorMsg}
           </div>
         )}
 
         {infoMsg && (
           <div style={{ 
-            marginTop: 20, 
+            marginTop: 32, 
             padding: 16, 
-            background: "#f0fdf4", 
-            border: "1px solid #dcfce7",
-            borderRadius: '8px',
-            color: '#166534',
-            fontSize: '0.875rem'
+            border: "1px solid #ffffff",
+            fontSize: '0.75rem',
+            fontFamily: 'JetBrains Mono'
           }}>
-            {infoMsg}
+            SYSTEM_STATUS: {infoMsg}
           </div>
         )}
 
         {reserved && (
           <div style={{ 
-            marginTop: 32, 
-            padding: 24, 
-            background: 'var(--card-bg)',
-            border: "1px solid #3b82f6", 
-            borderRadius: 12,
-            boxShadow: '0 0 20px rgba(59, 130, 246, 0.1)'
+            marginTop: 4rem, 
+            padding: '3rem', 
+            border: "1px solid #ffffff",
+            position: 'relative'
           }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Current Reservation
+            <div style={{ 
+              position: 'absolute', 
+              top: '-10px', 
+              left: '20px', 
+              background: '#000', 
+              padding: '0 10px',
+              fontSize: '0.65rem',
+              fontWeight: 800,
+              letterSpacing: '0.2em'
+            }}>
+              RESERVATION_DATA
             </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 700, marginTop: 8, color: 'var(--text-primary)' }}>
+            
+            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
               {reserved.company_name}
             </div>
             
             <div style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-              gap: 24,
-              marginTop: 24,
-              paddingTop: 24,
+              gap: 40,
+              marginTop: 40,
+              paddingTop: 40,
               borderTop: '1px solid var(--border-color)'
             }}>
               <div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: 4 }}>Company Key</div>
-                <code style={{ fontSize: '0.875rem', fontWeight: 600 }}>{reserved.company_key}</code>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Protocol Key</div>
+                <code style={{ fontSize: '1rem', background: 'transparent', padding: 0 }}>{reserved.company_key}</code>
               </div>
               <div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: 4 }}>Reserved Date</div>
-                <div style={{ fontSize: '0.875rem', fontWeight: 500 }}>
-                  {new Date(reserved.reserved_at).toLocaleDateString()}
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Timestamp</div>
+                <div style={{ fontSize: '1rem', fontWeight: 500 }}>
+                  {new Date(reserved.reserved_at).toISOString()}
                 </div>
               </div>
-            </div>
-
-            <div style={{ 
-              marginTop: 24, 
-              padding: 16, 
-              background: 'rgba(59, 130, 246, 0.05)', 
-              borderRadius: 8,
-              fontSize: '0.875rem',
-              color: 'var(--text-secondary)'
-            }}>
-              💡 Next step: The research form will now be available for this company.
             </div>
           </div>
         )}
