@@ -34,36 +34,36 @@ function Login() {
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <h2 style={{ margin: 0, fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <h2 style={{ margin: 0, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
               Authentication
             </h2>
-            <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>Sign in to access the analysis</p>
+            <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: '#71717a' }}>Sign in to access the analysis</p>
           </div>
 
           {sent ? (
             <div style={{ 
               textAlign: 'center', 
               padding: '2rem', 
-              border: '1px solid #ffffff',
-              color: '#ffffff'
+              border: '1px solid #000000',
+              color: '#000000'
             }}>
-              <p style={{ color: 'inherit', margin: 0, fontWeight: 500, fontSize: '0.875rem' }}>
-                Check your email for the access link.
+              <p style={{ color: 'inherit', margin: 0, fontWeight: 600, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Access link dispatched to inbox.
               </p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-              <div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'center' }}>
+              <div style={{ width: '100%' }}>
                 <label style={{ 
                   display: 'block', 
                   marginBottom: '0.75rem', 
-                  fontSize: '0.7rem', 
-                  fontWeight: 700,
+                  fontSize: '0.65rem', 
+                  fontWeight: 800,
                   textTransform: 'uppercase',
-                  letterSpacing: '0.1em',
-                  color: 'var(--text-secondary)'
+                  letterSpacing: '0.2em',
+                  color: '#000000'
                 }}>
-                  Your Email
+                  Access Credentials
                 </label>
                 <input
                   type="email"
@@ -72,18 +72,18 @@ function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <button onClick={sendMagicLink} style={{ width: '100%' }}>
+              <button onClick={sendMagicLink} style={{ width: 'auto' }}>
                 Send Link
               </button>
               {error && (
                 <p style={{ 
                   color: '#ef4444', 
-                  fontSize: '0.75rem', 
+                  fontSize: '0.7rem', 
                   textAlign: 'center',
                   fontFamily: 'JetBrains Mono',
                   margin: 0 
                 }}>
-                  {error}
+                  STATUS_ERROR: {error}
                 </p>
               )}
             </div>
@@ -191,43 +191,48 @@ function Reserve() {
         alignItems: "center",
         marginBottom: '4rem',
         paddingBottom: '1rem',
-        borderBottom: '1px solid var(--border-color)'
+        borderBottom: '1px solid #000000'
       }}>
-        <h2 style={{ margin: 0, fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Terminal / Reserve</h2>
+        <h2 style={{ margin: 0, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.2em', fontWeight: 800 }}>Terminal // Reserve</h2>
         <button 
           onClick={onLogout}
           style={{ 
             background: 'transparent', 
-            color: '#ffffff',
+            color: '#000000',
             border: 'none',
-            fontSize: '0.7rem',
+            fontSize: '0.65rem',
             padding: 0,
-            textDecoration: 'underline'
+            textDecoration: 'underline',
+            minWidth: 'auto',
+            width: 'auto',
+            letterSpacing: '0.1em',
+            fontWeight: 800
           }}
         >
-          Disconnect
+          DISCONNECT_SYSTEM
         </button>
       </header>
 
       <div className="card">
-        <p style={{ marginBottom: '2.5rem', fontSize: '0.875rem', letterSpacing: '0.05em' }}>
-          Secure a company identifier to begin deep market analysis. Valid for 48h.
+        <p style={{ marginBottom: '2.5rem', fontSize: '0.8rem', letterSpacing: '0.05em', fontWeight: 500, lineHeight: 1.6 }}>
+          SECURE A COMPANY IDENTIFIER TO INITIALIZE DEEP MARKET ANALYSIS. 
+          VALIDATION PERIOD: 48H OF INACTIVITY.
         </p>
 
-        <div style={{ display: "flex", gap: 0 }}>
+        <div style={{ display: "flex", gap: 0, justifyContent: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <input
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
-            placeholder="SYSTEM_QUERY: [ENTER COMPANY NAME]"
-            style={{ flex: 1, borderRight: 'none' }}
+            placeholder="SYSTEM_QUERY: [ENTER_NAME]"
+            style={{ flex: 1, minWidth: '280px' }}
             disabled={loading || !!reserved}
           />
           <button
             onClick={onReserve}
             disabled={loading || !!reserved}
-            style={{ whiteSpace: 'nowrap', padding: '0 3rem' }}
+            style={{ width: 'auto' }}
           >
-            {loading ? "Processing..." : "Secure"}
+            {loading ? "PROCESS..." : "SECURE_ID"}
           </button>
         </div>
 
@@ -237,8 +242,9 @@ function Reserve() {
             padding: 16, 
             border: "1px solid #ef4444",
             color: '#ef4444',
-            fontSize: '0.75rem',
-            fontFamily: 'JetBrains Mono'
+            fontSize: '0.7rem',
+            fontFamily: 'JetBrains Mono',
+            textTransform: 'uppercase'
           }}>
             ERROR_LOG: {errorMsg}
           </div>
@@ -248,9 +254,10 @@ function Reserve() {
           <div style={{ 
             marginTop: 32, 
             padding: 16, 
-            border: "1px solid #ffffff",
-            fontSize: '0.75rem',
-            fontFamily: 'JetBrains Mono'
+            border: "1px solid #000000",
+            fontSize: '0.7rem',
+            fontFamily: 'JetBrains Mono',
+            textTransform: 'uppercase'
           }}>
             SYSTEM_STATUS: {infoMsg}
           </div>
@@ -258,25 +265,25 @@ function Reserve() {
 
         {reserved && (
           <div style={{ 
-            marginTop: '4rem', 
+            marginTop: 5rem, 
             padding: '3rem', 
-            border: "1px solid #ffffff",
+            border: "2px solid #000000",
             position: 'relative'
           }}>
             <div style={{ 
               position: 'absolute', 
-              top: '-10px', 
-              left: '20px', 
-              background: '#000', 
-              padding: '0 10px',
-              fontSize: '0.65rem',
-              fontWeight: 800,
-              letterSpacing: '0.2em'
+              top: '-12px', 
+              left: '24px', 
+              background: '#fff', 
+              padding: '0 12px',
+              fontSize: '0.7rem',
+              fontWeight: 900,
+              letterSpacing: '0.25em'
             }}>
-              RESERVATION_DATA
+              SECURED_DATA_STREAM
             </div>
             
-            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
+            <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#000000', letterSpacing: '-0.03em', textTransform: 'uppercase' }}>
               {reserved.company_name}
             </div>
             
@@ -286,16 +293,16 @@ function Reserve() {
               gap: 40,
               marginTop: 40,
               paddingTop: 40,
-              borderTop: '1px solid var(--border-color)'
+              borderTop: '1px solid #000000'
             }}>
               <div>
-                <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Protocol Key</div>
-                <code style={{ fontSize: '1rem', background: 'transparent', padding: 0 }}>{reserved.company_key}</code>
+                <div style={{ fontSize: '0.6rem', color: '#71717a', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 800 }}>Protocol // UID</div>
+                <code style={{ fontSize: '0.9rem', background: 'transparent', border: 'none', padding: 0 }}>{reserved.company_key}</code>
               </div>
               <div>
-                <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Timestamp</div>
-                <div style={{ fontSize: '1rem', fontWeight: 500 }}>
-                  {new Date(reserved.reserved_at).toISOString()}
+                <div style={{ fontSize: '0.6rem', color: '#71717a', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 800 }}>Creation // UTC</div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>
+                  {new Date(reserved.reserved_at).toISOString().split('T')[0]}
                 </div>
               </div>
             </div>

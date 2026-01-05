@@ -1,19 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --primary: #ffffff;
-  --bg-main: #000000;
-  --card-bg: #000000;
-  --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --border-color: #27272a;
-  --input-bg: #000000;
+  --primary: #000000;
+  --bg-main: #ffffff;
+  --card-bg: #ffffff;
+  --text-primary: #000000;
+  --text-secondary: #52525b;
+  --border-color: #e4e4e7;
+  --input-bg: #ffffff;
   
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: dark;
+  color-scheme: light;
   color: var(--text-primary);
   background-color: var(--bg-main);
 
@@ -38,12 +38,6 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes glow {
-  0% { box-shadow: 0 0 5px rgba(255,255,255,0.05); }
-  50% { box-shadow: 0 0 20px rgba(255,255,255,0.1); }
-  100% { box-shadow: 0 0 5px rgba(255,255,255,0.05); }
-}
-
 .animate-fade-in {
   animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -51,40 +45,46 @@ body {
 .card {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
-  border-radius: 1px;
+  border-radius: 2px;
   padding: 2.5rem;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .card:hover {
-  border-color: #52525b;
+  border-color: #000000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 button {
   border-radius: 0px;
-  border: 1px solid #ffffff;
-  padding: 0.75rem 1.5rem;
-  font-size: 0.75rem;
+  border: 1px solid #000000;
+  padding: 0.75rem 2rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   font-family: inherit;
-  background-color: #ffffff;
-  color: #000000;
+  background-color: #000000;
+  color: #ffffff;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  width: auto;
+  min-width: 140px;
 }
 
 button:hover {
-  background-color: #000000;
-  color: #ffffff;
-  transform: scale(1.02);
+  background-color: #ffffff;
+  color: #000000;
+}
+
+button:active {
+  transform: scale(0.98);
 }
 
 button:disabled {
-  border-color: #27272a;
-  background-color: #000000;
-  color: #27272a;
+  border-color: #e4e4e7;
+  background-color: #f4f4f5;
+  color: #a1a1aa;
   cursor: not-allowed;
 }
 
@@ -94,49 +94,51 @@ input {
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
   font-family: inherit;
-  background-color: #000000;
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #000000;
   width: 100%;
   box-sizing: border-box;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 input:focus {
   outline: none;
-  border-color: #ffffff;
+  border-color: #000000;
 }
 
 h1 {
   font-weight: 800;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.4em;
   text-transform: uppercase;
   margin: 0;
+  color: #000000;
 }
 
 h2 {
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--text-primary);
 }
 
 .tagline {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.4em;
+  letter-spacing: 0.5em;
   color: #71717a;
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
 }
 
 code {
   font-family: 'JetBrains Mono', monospace;
-  background: #18181b;
+  background: #f4f4f5;
   padding: 0.2rem 0.4rem;
-  color: #ffffff;
+  color: #000000;
+  border: 1px solid #e4e4e7;
 }
 
 .logo-container {
   text-align: center;
-  margin-bottom: 4rem;
-  padding-top: 2rem;
+  margin-bottom: 5rem;
+  padding-top: 3rem;
 }
