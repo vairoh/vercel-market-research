@@ -29,7 +29,7 @@ function Login() {
     <div style={{ minHeight: '100vh', padding: '20px' }} className="animate-fade-in">
       <div className="logo-container">
         <h1>ATOMITY</h1>
-        <div className="tagline">Market intelligence / Market Analysis</div>
+        <div className="tagline">Market & Competitive Intelligence</div>
       </div>
       
       <div style={{ display: 'flex', justifyContent: 'center' }}>
