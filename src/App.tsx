@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 import ReservePage from "./pages/Reserve";
+import ResearchPage from "./pages/Research";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -131,6 +132,10 @@ function App() {
         <Route
           path="/reserve"
           element={session ? <ReservePage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/research"
+          element={session ? <ResearchPage /> : <Navigate to="/login" />}
         />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>

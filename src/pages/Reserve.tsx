@@ -85,16 +85,10 @@ export default function ReservePage() {
         return;
       }
 
-      setReserved({
-        company_key: row.company_key,
-        company_name: row.company_name,
-        reserved_by: row.reserved_by,
-        reserved_at: row.reserved_at,
-        last_activity_at: row.last_activity_at,
-        reservation_status: row.reservation_status,
-        reservation_expires_at: row.reservation_expires_at
-      });
-      setInfoMsg("RESERVATION_SUCCESS: SYSTEM_RESOURCE_LOCKED");
+      setInfoMsg("RESERVATION_SUCCESS: REDIRECTING TO RESEARCH...");
+      setTimeout(() => {
+        navigate(`/research?company_key=${row.company_key}`);
+      }, 1500);
     } catch (e: any) {
       console.error(e);
       setErrorMsg(e?.message ?? "UNKNOWN_SYSTEM_FAULT");
