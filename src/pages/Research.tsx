@@ -4,8 +4,6 @@ import { supabase } from "../supabaseClient";
 
 type Step = "GENERAL" | "ANALYSIS" | "SUBMISSION";
 
-const ANALYSIS_OPTIONS = ["FinOps", "Orchestration", "Compliance", "Sovereignty", "Sustainability", "None"];
-
 export default function ResearchPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -24,11 +22,6 @@ export default function ResearchPage() {
     product_name: "",
     product_category: "",
     finops: [] as string[],
-    orchestration: [] as string[],
-    compliance: [] as string[],
-    sovereignty: [] as string[],
-    sustainability: [] as string[],
-    pricing_model: "",
     evidence_links: "",
     notes: ""
   });
@@ -59,7 +52,6 @@ export default function ResearchPage() {
 
       setCompany(data);
       
-      // Load saved progress from local storage
       const saved = localStorage.getItem(`research_progress_${companyKey}`);
       if (saved) {
         setFormData(JSON.parse(saved));
@@ -74,18 +66,31 @@ export default function ResearchPage() {
     init();
   }, [companyKey, navigate]);
 
+  // Real-time auto-save
   useEffect(() => {
     if (!loading && companyKey) {
       localStorage.setItem(`research_progress_${companyKey}`, JSON.stringify(formData));
     }
   }, [formData, loading, companyKey]);
 
+  const handleInputChange = (field: keyof typeof formData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Premium Real-time error clearing
+    if (errors[field] && value.trim()) {
+      setErrors(prev => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
   const validateStep = (step: Step) => {
     const newErrors: Record<string, string> = {};
     if (step === "GENERAL") {
-      if (!formData.candidate_name.trim()) newErrors.candidate_name = "Full Name is required";
-      if (!formData.company_website.trim()) newErrors.company_website = "Company Website is required";
-      if (!formData.hq_country.trim()) newErrors.hq_country = "HQ Country is required";
+      if (!formData.candidate_name.trim()) newErrors.candidate_name = "Please provide your full name to proceed.";
+      if (!formData.hq_country.trim()) newErrors.hq_country = "Please specify the country where the company is headquartered.";
+      if (!formData.company_website.trim()) newErrors.company_website = "A valid company website URL is required.";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -103,18 +108,22 @@ export default function ResearchPage() {
     else if (currentStep === "SUBMISSION") setCurrentStep("ANALYSIS");
   };
 
-  const handleToggleOption = (field: keyof typeof formData, option: string) => {
+  const handleToggleOption = (option: string) => {
     setFormData(prev => {
-      const current = (prev[field] as string[]) || [];
-      if (option === "None") {
-        return { ...prev, [field]: ["None"] };
-      }
-      const filtered = current.filter(o => o !== "None");
-      const next = filtered.includes(option)
-        ? filtered.filter(o => o !== option)
-        : [...filtered, option];
-      return { ...prev, [field]: next.length === 0 ? ["None"] : next };
+      const current = prev.finops;
+      const next = current.includes(option)
+        ? current.filter(o => o !== option)
+        : [...current, option];
+      return { ...prev, finops: next };
     });
+  };
+
+  const handleSelectAll = () => {
+    const all = ["FinOps", "Orchestration", "Compliance", "Sovereignty", "Sustainability"];
+    setFormData(prev => ({ 
+      ...prev, 
+      finops: prev.finops.length === all.length ? [] : all 
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,15 +136,18 @@ export default function ResearchPage() {
     const { error } = await supabase
       .from("research_submissions")
       .insert([{
-        ...formData,
+        candidate_name: formData.candidate_name,
+        candidate_email: formData.candidate_email,
+        company_website: formData.company_website,
+        hq_country: formData.hq_country,
+        product_name: formData.product_name,
+        product_category: formData.product_category,
         finops: formData.finops.join(", "),
-        orchestration: formData.orchestration.join(", "),
-        compliance: formData.compliance.join(", "),
-        sovereignty: formData.sovereignty.join(", "),
-        sustainability: formData.sustainability.join(", "),
         company_name: company.company_name,
         company_key: company.company_key,
-        created_by: session?.user.id
+        created_by: session?.user.id,
+        evidence_links: formData.evidence_links,
+        notes: formData.notes
       }]);
 
     if (error) {
@@ -177,52 +189,59 @@ export default function ResearchPage() {
       <div className="card" style={{ borderRadius: '16px' }}>
         {currentStep === "GENERAL" && (
           <div className="animate-fade-in">
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '2rem' }}>General Company Profile</h3>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>General Profile</h3>
             
-            <div style={{ display: 'grid', gap: '2rem' }}>
+            <div style={{ display: 'grid', gap: '2.5rem' }}>
+              {/* Researcher Identification */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Reserved Company</label>
-                  <input disabled value={company.company_name} style={{ backgroundColor: '#f4f4f5' }} />
+                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Full Name *</label>
+                  <input 
+                    value={formData.candidate_name} 
+                    onChange={e => handleInputChange('candidate_name', e.target.value)} 
+                    placeholder="Enter your full name"
+                    style={{ borderColor: errors.candidate_name ? '#ef4444' : '#e4e4e7', width: '100%', borderRadius: '8px', padding: '0.75rem', fontSize: '0.9rem' }}
+                  />
+                  <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>Please enter your full legal name as the primary researcher for this project.</div>
+                  {errors.candidate_name && <div style={{ color: '#ef4444', fontSize: '0.65rem', marginTop: '0.4rem', fontWeight: 600 }}>{errors.candidate_name}</div>}
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Researcher Email</label>
-                  <input disabled value={formData.candidate_email} style={{ backgroundColor: '#f4f4f5' }} />
+                  <input disabled value={formData.candidate_email} style={{ backgroundColor: '#f4f4f5', width: '100%', borderRadius: '8px', padding: '0.75rem', fontSize: '0.9rem', border: '1px solid #e4e4e7' }} />
+                  <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>Your authenticated terminal email address (locked for security).</div>
                 </div>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Full Name *</label>
-                <input 
-                  value={formData.candidate_name} 
-                  onChange={e => setFormData({...formData, candidate_name: e.target.value})} 
-                  placeholder="Enter your full name"
-                  style={{ borderColor: errors.candidate_name ? '#ef4444' : undefined }}
-                />
-                {errors.candidate_name && <div style={{ color: '#ef4444', fontSize: '0.65rem', marginTop: '0.25rem' }}>{errors.candidate_name}</div>}
-              </div>
-
+              {/* Company Context */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Company Website *</label>
-                  <input 
-                    value={formData.company_website} 
-                    onChange={e => setFormData({...formData, company_website: e.target.value})} 
-                    placeholder="https://..."
-                    style={{ borderColor: errors.company_website ? '#ef4444' : undefined }}
-                  />
-                  {errors.company_website && <div style={{ color: '#ef4444', fontSize: '0.65rem', marginTop: '0.25rem' }}>{errors.company_website}</div>}
+                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Reserved Company</label>
+                  <input disabled value={company.company_name} style={{ backgroundColor: '#f4f4f5', width: '100%', borderRadius: '8px', padding: '0.75rem', fontSize: '0.9rem', border: '1px solid #e4e4e7', textTransform: 'uppercase', fontWeight: 700 }} />
+                  <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>The specific market entity currently assigned to your research terminal.</div>
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>HQ Country *</label>
                   <input 
                     value={formData.hq_country} 
-                    onChange={e => setFormData({...formData, hq_country: e.target.value})} 
-                    placeholder="Country"
-                    style={{ borderColor: errors.hq_country ? '#ef4444' : undefined }}
+                    onChange={e => handleInputChange('hq_country', e.target.value)} 
+                    placeholder="e.g. United States, Germany"
+                    style={{ borderColor: errors.hq_country ? '#ef4444' : '#e4e4e7', width: '100%', borderRadius: '8px', padding: '0.75rem', fontSize: '0.9rem' }}
                   />
-                  {errors.hq_country && <div style={{ color: '#ef4444', fontSize: '0.65rem', marginTop: '0.25rem' }}>{errors.hq_country}</div>}
+                  <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>Specify the primary nation of corporate operation and legal registration.</div>
+                  {errors.hq_country && <div style={{ color: '#ef4444', fontSize: '0.65rem', marginTop: '0.4rem', fontWeight: 600 }}>{errors.hq_country}</div>}
                 </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Company Website *</label>
+                <input 
+                  value={formData.company_website} 
+                  onChange={e => handleInputChange('company_website', e.target.value)} 
+                  placeholder="https://www.company.com"
+                  style={{ borderColor: errors.company_website ? '#ef4444' : '#e4e4e7', width: '100%', borderRadius: '8px', padding: '0.75rem', fontSize: '0.9rem' }}
+                />
+                <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>The official primary corporate URL for direct market validation.</div>
+                {errors.company_website && <div style={{ color: '#ef4444', fontSize: '0.65rem', marginTop: '0.4rem', fontWeight: 600 }}>{errors.company_website}</div>}
               </div>
             </div>
           </div>
@@ -230,83 +249,111 @@ export default function ResearchPage() {
 
         {currentStep === "ANALYSIS" && (
           <div className="animate-fade-in">
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '2rem' }}>Deep Analysis Parameters</h3>
-            <p style={{ fontSize: '0.85rem', color: '#71717a', marginBottom: '2.5rem' }}>Select all applicable capabilities for {company.company_name}. Select "None" if not applicable.</p>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>Deep Analysis Parameters</h3>
             
             <div style={{ display: 'grid', gap: '2.5rem' }}>
-              {[
-                { id: 'finops', label: 'FinOps Capability' },
-                { id: 'orchestration', label: 'Orchestration' },
-                { id: 'compliance', label: 'Compliance' },
-                { id: 'sovereignty', label: 'Sovereignty' },
-                { id: 'sustainability', label: 'Sustainability' }
-              ].map(field => (
-                <div key={field.id}>
-                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '1rem', textTransform: 'uppercase' }}>{field.label}</label>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-                    {ANALYSIS_OPTIONS.map(opt => {
-                      const isActive = (formData[field.id as keyof typeof formData] as string[]).includes(opt);
-                      return (
-                        <button
-                          key={opt}
-                          type="button"
-                          onClick={() => handleToggleOption(field.id as keyof typeof formData, opt)}
-                          style={{
-                            width: 'auto',
-                            padding: '0.5rem 1.25rem',
-                            fontSize: '0.75rem',
-                            borderRadius: '30px',
-                            backgroundColor: isActive ? '#000000' : '#ffffff',
-                            color: isActive ? '#ffffff' : '#000000',
-                            border: '1px solid #000000',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          {opt}
-                        </button>
-                      );
-                    })}
-                  </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000000', marginBottom: '0.75rem' }}>What kind of service/product does this company provide?</label>
+                <div style={{ fontSize: '0.75rem', color: '#71717a', marginBottom: '1.5rem', lineHeight: 1.5 }}>Select all applicable categories that define the primary value proposition of {company.company_name}.</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  {["FinOps", "Orchestration", "Compliance", "Sovereignty", "Sustainability"].map(opt => {
+                    const isActive = formData.finops.includes(opt);
+                    return (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => handleToggleOption(opt)}
+                        style={{
+                          width: 'auto',
+                          padding: '0.75rem 1.75rem',
+                          fontSize: '0.8rem',
+                          borderRadius: '30px',
+                          backgroundColor: isActive ? '#000000' : '#ffffff',
+                          color: isActive ? '#ffffff' : '#000000',
+                          border: '1px solid #000000',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          fontWeight: 600,
+                          letterSpacing: '0.02em'
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    );
+                  })}
+                  <button
+                    type="button"
+                    onClick={handleSelectAll}
+                    style={{
+                      width: 'auto',
+                      padding: '0.75rem 1.75rem',
+                      fontSize: '0.8rem',
+                      borderRadius: '30px',
+                      backgroundColor: formData.finops.length === 5 ? '#000000' : '#ffffff',
+                      color: formData.finops.length === 5 ? '#ffffff' : '#000000',
+                      border: '1px solid #000000',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      fontWeight: 800,
+                      letterSpacing: '0.05em'
+                    }}
+                  >
+                    ALL
+                  </button>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         )}
 
         {currentStep === "SUBMISSION" && (
           <div className="animate-fade-in">
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '2rem' }}>Final Submission</h3>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>Final Details</h3>
             
             <div style={{ display: 'grid', gap: '2rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Product Name</label>
-                  <input value={formData.product_name} onChange={e => setFormData({...formData, product_name: e.target.value})} />
+                  <input 
+                    value={formData.product_name} 
+                    onChange={e => handleInputChange('product_name', e.target.value)} 
+                    placeholder="e.g. Platform X"
+                    style={{ width: '100%', borderRadius: '8px', padding: '0.75rem', border: '1px solid #e4e4e7', fontSize: '0.9rem' }}
+                  />
+                  <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>The specific brand or technical name of the primary offering.</div>
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Product Category</label>
-                  <input value={formData.product_category} onChange={e => setFormData({...formData, product_category: e.target.value})} />
+                  <input 
+                    value={formData.product_category} 
+                    onChange={e => handleInputChange('product_category', e.target.value)} 
+                    placeholder="e.g. SaaS Solution"
+                    style={{ width: '100%', borderRadius: '8px', padding: '0.75rem', border: '1px solid #e4e4e7', fontSize: '0.9rem' }}
+                  />
+                  <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>Broad market classification of the service or technology.</div>
                 </div>
               </div>
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Evidence Links (URLs)</label>
                 <textarea 
-                  style={{ width: '100%', minHeight: '100px', borderRadius: '8px', padding: '1rem' }} 
+                  style={{ width: '100%', minHeight: '100px', borderRadius: '8px', padding: '1rem', border: '1px solid #e4e4e7', fontSize: '0.9rem', lineHeight: 1.5 }} 
                   value={formData.evidence_links} 
-                  onChange={e => setFormData({...formData, evidence_links: e.target.value})} 
-                  placeholder="Paste source links here" 
+                  onChange={e => handleInputChange('evidence_links', e.target.value)} 
+                  placeholder="Paste URLs to source documentation" 
                 />
+                <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>Provide direct links to sources that validate your findings.</div>
               </div>
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Additional Notes</label>
                 <textarea 
-                  style={{ width: '100%', minHeight: '100px', borderRadius: '8px', padding: '1rem' }} 
+                  style={{ width: '100%', minHeight: '100px', borderRadius: '8px', padding: '1rem', border: '1px solid #e4e4e7', fontSize: '0.9rem', lineHeight: 1.5 }} 
                   value={formData.notes} 
-                  onChange={e => setFormData({...formData, notes: e.target.value})} 
+                  onChange={e => handleInputChange('notes', e.target.value)} 
+                  placeholder="Enter any additional observations"
                 />
+                <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>Include any other relevant qualitative data discovered.</div>
               </div>
             </div>
           </div>
@@ -324,7 +371,9 @@ export default function ResearchPage() {
               backgroundColor: '#ffffff', 
               color: '#000000',
               border: '1px solid #000000',
-              visibility: currentStep === "GENERAL" ? 'hidden' : 'visible'
+              visibility: currentStep === "GENERAL" ? 'hidden' : 'visible',
+              cursor: 'pointer',
+              fontWeight: 600
             }}
           >
             Back
@@ -334,7 +383,7 @@ export default function ResearchPage() {
             <button 
               type="button" 
               onClick={handleNext}
-              style={{ width: 'auto', padding: '0.75rem 2.5rem', borderRadius: '30px' }}
+              style={{ width: 'auto', padding: '0.75rem 2.5rem', borderRadius: '30px', backgroundColor: '#000000', color: '#ffffff', border: 'none', cursor: 'pointer', fontWeight: 600 }}
             >
               Next
             </button>
@@ -342,9 +391,9 @@ export default function ResearchPage() {
             <button 
               onClick={handleSubmit}
               disabled={submitting}
-              style={{ width: 'auto', padding: '0.75rem 2.5rem', borderRadius: '30px', backgroundColor: '#000000', color: '#ffffff' }}
+              style={{ width: 'auto', padding: '0.75rem 2.5rem', borderRadius: '30px', backgroundColor: '#000000', color: '#ffffff', border: 'none', cursor: 'pointer', fontWeight: 600 }}
             >
-              {submitting ? "Submitting..." : "Submit Research"}
+              {submitting ? "Processing..." : "Finalize & Submit"}
             </button>
           )}
         </div>
