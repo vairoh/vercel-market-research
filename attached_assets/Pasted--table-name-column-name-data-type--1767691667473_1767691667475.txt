@@ -1,0 +1,30 @@
+| table_name           | column_name            | data_type                |
+| -------------------- | ---------------------- | ------------------------ |
+| research_submissions | id                     | uuid                     |
+| research_submissions | created_at             | timestamp with time zone |
+| company_registry     | reserved_at            | timestamp with time zone |
+| company_registry     | last_activity_at       | timestamp with time zone |
+| company_registry     | reservation_expires_at | timestamp with time zone |
+| company_registry     | reserved_by            | uuid                     |
+| research_submissions | created_by             | uuid                     |
+| research_submissions | company_name           | text                     |
+| company_registry     | company_name           | text                     |
+| research_submissions | hq_country             | text                     |
+| research_submissions | product_name           | text                     |
+| research_submissions | product_category       | text                     |
+| research_submissions | finops                 | text                     |
+| research_submissions | orchestration          | text                     |
+| research_submissions | compliance             | text                     |
+| research_submissions | sovereignty            | text                     |
+| research_submissions | sustainability         | text                     |
+| research_submissions | pricing_model          | text                     |
+| research_submissions | evidence_links         | text                     |
+| research_submissions | notes                  | text                     |
+| research_submissions | company_key            | text                     |
+| research_submissions | company_website        | text                     |
+| company_registry     | company_key            | text                     |
+| company_registry     | reserved_by_name       | text                     |
+| company_registry     | reserved_by_email      | text                     |
+| company_registry     | reservation_status     | text                     |
+| research_submissions | candidate_name         | text                     |
+| research_submissions | candidate_email        | text                     |

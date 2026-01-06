@@ -83,7 +83,13 @@ export default function ReservePage() {
         return;
       }
 
-      setReserved(row);
+      setReserved({
+        company_key: row.company_key,
+        company_name: row.company_name,
+        reserved_by: row.reserved_by,
+        reserved_at: row.reserved_at,
+        last_activity_at: row.last_activity_at
+      });
       setInfoMsg("RESERVATION_SUCCESS: SYSTEM_RESOURCE_LOCKED");
     } catch (e: any) {
       console.error(e);
