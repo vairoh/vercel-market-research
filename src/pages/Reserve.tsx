@@ -84,10 +84,7 @@ export default function ReservePage() {
         .maybeSingle();
 
       if (!checkError && existing && existing.reserved_by === (await supabase.auth.getUser()).data.user?.id) {
-        setInfoMsg("RESTORING SESSION: REDIRECTING...");
-        setTimeout(() => {
-          navigate(`/research?company_key=${existing.company_key}`, { replace: true });
-        }, 1500);
+        navigate(`/research?company_key=${existing.company_key}`, { replace: true });
         return;
       }
 
@@ -109,18 +106,15 @@ export default function ReservePage() {
 
       const row = Array.isArray(data) ? data[0] : data;
       if (!row?.company_key) {
-        setErrorMsg("RESERVATION_FAILURE: NULL_IDENTIFIER_RETURNED");
+        setErrorMsg("Reservation failed. Please try again.");
         setReserved(null);
         return;
       }
 
-      setInfoMsg("RESERVATION_SUCCESS: REDIRECTING TO RESEARCH...");
-      setTimeout(() => {
-        navigate(`/research?company_key=${row.company_key}`, { replace: true });
-      }, 1500);
+      navigate(`/research?company_key=${row.company_key}`, { replace: true });
     } catch (e: any) {
       console.error(e);
-      setErrorMsg(e?.message ?? "UNKNOWN_SYSTEM_FAULT");
+      setErrorMsg("An unexpected error occurred. Please try again.");
       setReserved(null);
     } finally {
       setLoading(false);
@@ -236,15 +230,20 @@ export default function ReservePage() {
         {errorMsg && (
           <div style={{ 
             marginTop: 32, 
-            padding: 16, 
-            border: "1px solid #ef4444",
-            color: '#ef4444',
-            fontSize: '0.7rem',
-            fontFamily: 'JetBrains Mono',
-            textTransform: 'uppercase',
-            borderRadius: '8px'
+            padding: '1.25rem', 
+            border: "1px solid #fee2e2",
+            backgroundColor: '#fef2f2',
+            color: '#b91c1c',
+            fontSize: '0.85rem',
+            fontWeight: 500,
+            borderRadius: '12px',
+            lineHeight: 1.5,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem'
           }}>
-            ERROR_LOG: {errorMsg}
+            <span style={{ fontSize: '1.2rem' }}>•</span>
+            {errorMsg}
           </div>
         )}
 
