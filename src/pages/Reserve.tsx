@@ -66,7 +66,12 @@ export default function ReservePage() {
       });
 
       if (error) {
-        setErrorMsg(error.message);
+        // Handle the specific error message from our SQL function
+        if (error.message.includes('currently reserved')) {
+          setErrorMsg("This company is already taken. Please search for a different company.");
+        } else {
+          setErrorMsg(error.message);
+        }
         setReserved(null);
         return;
       }
