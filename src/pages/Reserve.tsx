@@ -16,7 +16,7 @@ type ReserveResult = {
 export default function ReservePage() {
   const navigate = useNavigate();
   const [companyName, setCompanyName] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [reserved, setReserved] = useState<ReserveResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
@@ -35,13 +35,13 @@ export default function ReservePage() {
         .select("company_key, company_name, last_activity_at")
         .eq("reserved_by", session.user.id)
         .gt("last_activity_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-        .single();
+        .maybeSingle();
 
       if (!error && data) {
         setInfoMsg(`RESTORING SESSION FOR ${data.company_name.toUpperCase()}...`);
-        setTimeout(() => {
-          navigate(`/research?company_key=${data.company_key}`);
-        }, 1500);
+        navigate(`/research?company_key=${data.company_key}`, { replace: true });
+      } else {
+        setLoading(false);
       }
     };
     checkActiveReservation();
@@ -58,9 +58,6 @@ export default function ReservePage() {
 
       if (error) {
         console.error("keep_alive_company error:", error);
-        setInfoMsg("KEEP_ALIVE_FAILURE: SYSTEM_DISCONNECT_RISK");
-      } else {
-        setInfoMsg("SYSTEM_STATUS: CONNECTION_STABLE");
       }
     }, 60_000);
 
@@ -73,7 +70,7 @@ export default function ReservePage() {
 
     const name = companyName.trim();
     if (!name) {
-      setErrorMsg("VALIDATION_ERROR: IDENTIFIER_REQUIRED");
+      setErrorMsg("Target company name is required.");
       return;
     }
 
@@ -84,12 +81,12 @@ export default function ReservePage() {
         .from("company_registry")
         .select("company_key, reserved_by")
         .eq("company_name", name)
-        .single();
+        .maybeSingle();
 
       if (!checkError && existing && existing.reserved_by === (await supabase.auth.getUser()).data.user?.id) {
         setInfoMsg("RESTORING SESSION: REDIRECTING...");
         setTimeout(() => {
-          navigate(`/research?company_key=${existing.company_key}`);
+          navigate(`/research?company_key=${existing.company_key}`, { replace: true });
         }, 1500);
         return;
       }
@@ -119,7 +116,7 @@ export default function ReservePage() {
 
       setInfoMsg("RESERVATION_SUCCESS: REDIRECTING TO RESEARCH...");
       setTimeout(() => {
-        navigate(`/research?company_key=${row.company_key}`);
+        navigate(`/research?company_key=${row.company_key}`, { replace: true });
       }, 1500);
     } catch (e: any) {
       console.error(e);
@@ -134,6 +131,21 @@ export default function ReservePage() {
     await supabase.auth.signOut();
     navigate("/login");
   };
+
+  if (loading && !reserved) {
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        fontFamily: 'JetBrains Mono',
+        color: '#000000'
+      }}>
+        {infoMsg || "INITIALIZING_SYSTEM..."}
+      </div>
+    );
+  }
 
   return (
     <div style={{ 
