@@ -9,6 +9,8 @@ type ReserveResult = {
   reserved_by: string;
   reserved_at: string;
   last_activity_at: string;
+  reservation_status: string;
+  reservation_expires_at: string;
 };
 
 export default function ReservePage() {
@@ -88,7 +90,9 @@ export default function ReservePage() {
         company_name: row.company_name,
         reserved_by: row.reserved_by,
         reserved_at: row.reserved_at,
-        last_activity_at: row.last_activity_at
+        last_activity_at: row.last_activity_at,
+        reservation_status: row.reservation_status,
+        reservation_expires_at: row.reservation_expires_at
       });
       setInfoMsg("RESERVATION_SUCCESS: SYSTEM_RESOURCE_LOCKED");
     } catch (e: any) {

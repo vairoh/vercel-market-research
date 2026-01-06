@@ -1,0 +1,49 @@
+| type       | table_name           | column_name                                                     | data_type                | is_nullable | column_default                 |
+| ---------- | -------------------- | --------------------------------------------------------------- | ------------------------ | ----------- | ------------------------------ |
+| COLUMN     | company_registry     | company_name                                                    | text                     | NO          | null                           |
+| COLUMN     | company_registry     | reserved_at                                                     | timestamp with time zone | NO          | now()                          |
+| COLUMN     | company_registry     | company_key                                                     | text                     | NO          | null                           |
+| COLUMN     | company_registry     | reserved_by_name                                                | text                     | YES         | null                           |
+| COLUMN     | company_registry     | reserved_by_email                                               | text                     | YES         | null                           |
+| COLUMN     | company_registry     | reservation_status                                              | text                     | NO          | 'open'::text                   |
+| COLUMN     | company_registry     | last_activity_at                                                | timestamp with time zone | NO          | now()                          |
+| COLUMN     | company_registry     | reservation_expires_at                                          | timestamp with time zone | NO          | (now() + '48:00:00'::interval) |
+| COLUMN     | company_registry     | reserved_by                                                     | uuid                     | YES         | null                           |
+| COLUMN     | research_submissions | id                                                              | uuid                     | NO          | gen_random_uuid()              |
+| COLUMN     | research_submissions | created_at                                                      | timestamp with time zone | NO          | now()                          |
+| COLUMN     | research_submissions | candidate_name                                                  | text                     | NO          | null                           |
+| COLUMN     | research_submissions | candidate_email                                                 | text                     | NO          | null                           |
+| COLUMN     | research_submissions | company_name                                                    | text                     | NO          | null                           |
+| COLUMN     | research_submissions | company_website                                                 | text                     | YES         | null                           |
+| COLUMN     | research_submissions | hq_country                                                      | text                     | YES         | null                           |
+| COLUMN     | research_submissions | product_name                                                    | text                     | YES         | null                           |
+| COLUMN     | research_submissions | product_category                                                | text                     | YES         | null                           |
+| COLUMN     | research_submissions | finops                                                          | text                     | YES         | null                           |
+| COLUMN     | research_submissions | orchestration                                                   | text                     | YES         | null                           |
+| COLUMN     | research_submissions | compliance                                                      | text                     | YES         | null                           |
+| COLUMN     | research_submissions | sovereignty                                                     | text                     | YES         | null                           |
+| COLUMN     | research_submissions | sustainability                                                  | text                     | YES         | null                           |
+| COLUMN     | research_submissions | pricing_model                                                   | text                     | YES         | null                           |
+| COLUMN     | research_submissions | evidence_links                                                  | text                     | YES         | null                           |
+| COLUMN     | research_submissions | notes                                                           | text                     | YES         | null                           |
+| COLUMN     | research_submissions | company_key                                                     | text                     | NO          | null                           |
+| COLUMN     | research_submissions | created_by                                                      | uuid                     | YES         | null                           |
+| CONSTRAINT | company_registry     | company_registry_company_key_key                                | UNIQUE                   |             |                                |
+| CONSTRAINT | company_registry     | company_registry_company_name_unique                            | UNIQUE                   |             |                                |
+| CONSTRAINT | company_registry     | company_registry_pkey                                           | PRIMARY KEY              |             |                                |
+| CONSTRAINT | company_registry     | company_registry_reserved_by_fkey                               | FOREIGN KEY              |             |                                |
+| CONSTRAINT | research_submissions | research_submissions_company_key_fkey                           | FOREIGN KEY              |             |                                |
+| CONSTRAINT | research_submissions | research_submissions_pkey                                       | PRIMARY KEY              |             |                                |
+| CONSTRAINT | company_registry     | 2200_17494_1_not_null                                           | CHECK                    |             |                                |
+| CONSTRAINT | company_registry     | 2200_17494_2_not_null                                           | CHECK                    |             |                                |
+| CONSTRAINT | company_registry     | 2200_17494_3_not_null                                           | CHECK                    |             |                                |
+| CONSTRAINT | company_registry     | 2200_17494_6_not_null                                           | CHECK                    |             |                                |
+| CONSTRAINT | company_registry     | 2200_17494_7_not_null                                           | CHECK                    |             |                                |
+| CONSTRAINT | company_registry     | 2200_17494_8_not_null                                           | CHECK                    |             |                                |
+| CONSTRAINT | research_submissions | 2200_17484_1_not_null                                           | CHECK                    |             |                                |
+| CONSTRAINT | research_submissions | 2200_17484_2_not_null                                           | CHECK                    |             |                                |
+| CONSTRAINT | research_submissions | 2200_17484_3_not_null                                           | CHECK                    |             |                                |
+| CONSTRAINT | research_submissions | 2200_17484_4_not_null                                           | CHECK                    |             |                                |
+| CONSTRAINT | research_submissions | 2200_17484_5_not_null                                           | CHECK                    |             |                                |
+| CONSTRAINT | research_submissions | 2200_17484_18_not_null                                          | CHECK                    |             |                                |
+| FUNCTION   | reserve_company      | CREATE OR REPLACE FUNCTION public.reserve_company(p_company_nam |                          |             |                                |
