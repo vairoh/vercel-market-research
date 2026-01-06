@@ -22,13 +22,29 @@ export default function ReservePage() {
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) {
+    const checkActiveReservation = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
         navigate("/login");
+        return;
+      }
+
+      // Check if this user already has an active, non-expired reservation
+      const { data, error } = await supabase
+        .from("company_registry")
+        .select("company_key, company_name, last_activity_at")
+        .eq("reserved_by", session.user.id)
+        .gt("last_activity_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .single();
+
+      if (!error && data) {
+        setInfoMsg(`RESTORING SESSION FOR ${data.company_name.toUpperCase()}...`);
+        setTimeout(() => {
+          navigate(`/research?company_key=${data.company_key}`);
+        }, 1500);
       }
     };
-    checkSession();
+    checkActiveReservation();
   }, [navigate]);
 
   // keep-alive every 60s once reserved
