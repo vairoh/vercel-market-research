@@ -63,6 +63,22 @@ export default function ReservePage() {
 
     setLoading(true);
     try {
+      // 1. First, check if the current user already has an active reservation for this company
+      const { data: existing, error: checkError } = await supabase
+        .from("company_registry")
+        .select("company_key, reserved_by")
+        .eq("company_name", name)
+        .single();
+
+      if (!checkError && existing && existing.reserved_by === (await supabase.auth.getUser()).data.user?.id) {
+        setInfoMsg("RESTORING SESSION: REDIRECTING...");
+        setTimeout(() => {
+          navigate(`/research?company_key=${existing.company_key}`);
+        }, 1500);
+        return;
+      }
+
+      // 2. If not already owned, attempt to reserve
       const { data, error } = await supabase.rpc("reserve_company", {
         p_company_name: name,
       });
