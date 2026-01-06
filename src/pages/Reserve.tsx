@@ -138,7 +138,7 @@ export default function ReservePage() {
       <div className="card" style={{ borderRadius: '16px' }}>
         <div style={{ marginBottom: '2.5rem' }}>
           <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', fontWeight: 700, color: '#000000' }}>
-            Initialize Research Session
+            Select Research Company
           </h3>
           <p style={{ fontSize: '0.85rem', letterSpacing: '0.01em', fontWeight: 400, lineHeight: 1.6, color: '#3f3f46' }}>
             To begin your analysis, please specify the company you will be researching. 
