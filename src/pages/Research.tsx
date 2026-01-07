@@ -57,7 +57,12 @@ export default function ResearchPage() {
       
       const saved = localStorage.getItem(`research_progress_${companyKey}`);
       if (saved) {
-        setFormData(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        // Ensure finops is always an array
+        setFormData({
+          ...parsed,
+          finops: Array.isArray(parsed.finops) ? parsed.finops : []
+        });
       } else {
         setFormData(prev => ({
           ...prev,
@@ -104,9 +109,19 @@ export default function ResearchPage() {
   };
 
   const handleNext = () => {
-    if (validateStep(currentStep)) {
-      if (currentStep === "GENERAL") setCurrentStep("ANALYSIS");
-      else if (currentStep === "ANALYSIS") setCurrentStep("SUBMISSION");
+    console.log('handleNext called, currentStep:', currentStep);
+    const isValid = validateStep(currentStep);
+    console.log('Validation result:', isValid, 'Errors:', errors);
+    if (isValid) {
+      if (currentStep === "GENERAL") {
+        console.log('Moving to ANALYSIS step');
+        setCurrentStep("ANALYSIS");
+      } else if (currentStep === "ANALYSIS") {
+        console.log('Moving to SUBMISSION step');
+        setCurrentStep("SUBMISSION");
+      }
+    } else {
+      console.log('Validation failed, not moving to next step');
     }
   };
 
@@ -116,7 +131,7 @@ export default function ResearchPage() {
   };
 
   const handleToggleOption = (option: string) => {
-    const current = formData.finops;
+    const current = Array.isArray(formData.finops) ? formData.finops : [];
     const next = current.includes(option)
       ? current.filter(o => o !== option)
       : [...current, option];
@@ -125,7 +140,8 @@ export default function ResearchPage() {
 
   const handleSelectAll = () => {
     const all = ["FinOps", "Orchestration", "Compliance", "Sovereignty", "Sustainability"];
-    handleInputChange('finops', formData.finops.length === all.length ? [] : all);
+    const current = Array.isArray(formData.finops) ? formData.finops : [];
+    handleInputChange('finops', current.length === all.length ? [] : all);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -147,7 +163,7 @@ export default function ResearchPage() {
         funding_stage: formData.funding_stage,
         product_name: formData.product_name,
         product_category: formData.product_category,
-        finops: formData.finops.join(", "),
+        finops: Array.isArray(formData.finops) ? formData.finops.join(", ") : "",
         company_name: company.company_name,
         company_key: company.company_key,
         created_by: session?.user.id,
@@ -250,10 +266,13 @@ export default function ResearchPage() {
               <div>
                 <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>Categories</label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-                  {["FinOps", "Orchestration", "Compliance", "Sovereignty", "Sustainability"].map(opt => (
-                    <button key={opt} type="button" onClick={() => handleToggleOption(opt)} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: formData.finops.includes(opt) ? '#000' : '#fff', color: formData.finops.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
-                  ))}
-                  <button type="button" onClick={handleSelectAll} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: formData.finops.length === 5 ? '#000' : '#fff', color: formData.finops.length === 5 ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 800 }}>ALL</button>
+                  {(() => {
+                    const finopsArray = Array.isArray(formData.finops) ? formData.finops : [];
+                    return ["FinOps", "Orchestration", "Compliance", "Sovereignty", "Sustainability"].map(opt => (
+                      <button key={opt} type="button" onClick={() => handleToggleOption(opt)} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: finopsArray.includes(opt) ? '#000' : '#fff', color: finopsArray.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
+                    ));
+                  })()}
+                  <button type="button" onClick={handleSelectAll} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: (Array.isArray(formData.finops) ? formData.finops.length : 0) === 5 ? '#000' : '#fff', color: (Array.isArray(formData.finops) ? formData.finops.length : 0) === 5 ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 800 }}>ALL</button>
                 </div>
               </div>
             </div>
