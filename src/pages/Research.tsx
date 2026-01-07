@@ -15,6 +15,7 @@ export default function ResearchPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
+    buyer_persona: [] as string[],
     candidate_name: "",
     candidate_email: "",
     company_website: "",
@@ -139,7 +140,7 @@ export default function ResearchPage() {
   };
 
   const handleSelectAll = () => {
-    const all = ["FinOps", "Orchestration", "Compliance", "Sovereignty", "Sustainability"];
+    const all = ["FinOps", "Compliance", "Sovereignty", "Sustainability"];
     const current = Array.isArray(formData.finops) ? formData.finops : [];
     handleInputChange('finops', current.length === all.length ? [] : all);
   };
@@ -164,6 +165,7 @@ export default function ResearchPage() {
         product_name: formData.product_name,
         product_category: formData.product_category,
         finops: Array.isArray(formData.finops) ? formData.finops.join(", ") : "",
+        buyer_persona: Array.isArray(formData.buyer_persona) ? formData.buyer_persona.join(", ") : "",
         company_name: company.company_name,
         company_key: company.company_key,
         created_by: session?.user.id,
@@ -261,18 +263,38 @@ export default function ResearchPage() {
 
         {currentStep === "ANALYSIS" && (
           <div className="animate-fade-in">
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>Deep Analysis</h3>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>Product Analysis</h3>
             <div style={{ display: 'grid', gap: '2.5rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>Categories</label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                   {(() => {
                     const finopsArray = Array.isArray(formData.finops) ? formData.finops : [];
-                    return ["FinOps", "Orchestration", "Compliance", "Sovereignty", "Sustainability"].map(opt => (
+                    return ["FinOps", "Compliance", "Sovereignty", "Sustainability"].map(opt => (
                       <button key={opt} type="button" onClick={() => handleToggleOption(opt)} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: finopsArray.includes(opt) ? '#000' : '#fff', color: finopsArray.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
                     ));
                   })()}
-                  <button type="button" onClick={handleSelectAll} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: (Array.isArray(formData.finops) ? formData.finops.length : 0) === 5 ? '#000' : '#fff', color: (Array.isArray(formData.finops) ? formData.finops.length : 0) === 5 ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 800 }}>ALL</button>
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  Buyer Persona (who is website info aimed at?)
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  {["CTO", "CFO", "CISO", "Sustainable Heads"].map(opt => (
+                    <button key={opt} type="button" onClick={() => {
+                      const current = Array.isArray(formData.buyer_persona) ? formData.buyer_persona : [];
+                      const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
+                      handleInputChange('buyer_persona', next);
+                    }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.buyer_persona) && formData.buyer_persona.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.buyer_persona) && formData.buyer_persona.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
+                  ))}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: '#71717a', fontStyle: 'italic', marginBottom: '0.5rem' }}>
+                  Examples:<br />
+                  “Reduce cloud spend by 30%” → CFO / FinOps<br />
+                  “Ensure compliance with EU regulations” → CISO / Legal<br />
+                  “Automate infrastructure at scale” → CTO / Platform teams<br />
+                  “Meet CSRD reporting requirements” → Sustainability / ESG
                 </div>
               </div>
             </div>
