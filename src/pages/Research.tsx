@@ -19,6 +19,9 @@ export default function ResearchPage() {
     candidate_email: "",
     company_website: "",
     hq_country: "",
+    year_founded: "",
+    estimated_size: "",
+    funding_stage: "",
     product_name: "",
     product_category: "",
     finops: [] as string[],
@@ -140,6 +143,9 @@ export default function ResearchPage() {
         candidate_email: formData.candidate_email,
         company_website: formData.company_website,
         hq_country: formData.hq_country,
+        year_founded: formData.year_founded,
+        estimated_size: formData.estimated_size,
+        funding_stage: formData.funding_stage,
         product_name: formData.product_name,
         product_category: formData.product_category,
         finops: formData.finops.join(", "),
@@ -229,6 +235,41 @@ export default function ResearchPage() {
                   />
                   <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>Specify the primary nation of corporate operation and legal registration.</div>
                   {errors.hq_country && <div style={{ color: '#ef4444', fontSize: '0.65rem', marginTop: '0.4rem', fontWeight: 600 }}>{errors.hq_country}</div>}
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Year Founded</label>
+                  <input 
+                    type="text"
+                    value={formData.year_founded} 
+                    onChange={e => handleInputChange('year_founded', e.target.value)} 
+                    placeholder="YYYY"
+                    style={{ width: '100%', borderRadius: '8px', padding: '0.75rem', border: '1px solid #e4e4e7', fontSize: '0.9rem' }}
+                  />
+                  <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>Year of official incorporation.</div>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Estimated Size</label>
+                  <input 
+                    type="number"
+                    value={formData.estimated_size} 
+                    onChange={e => handleInputChange('estimated_size', e.target.value)} 
+                    placeholder="Headcount"
+                    style={{ width: '100%', borderRadius: '8px', padding: '0.75rem', border: '1px solid #e4e4e7', fontSize: '0.9rem' }}
+                  />
+                  <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>Total employee count.</div>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Funding Stage</label>
+                  <input 
+                    value={formData.funding_stage} 
+                    onChange={e => handleInputChange('funding_stage', e.target.value)} 
+                    placeholder="Stage"
+                    style={{ width: '100%', borderRadius: '8px', padding: '0.75rem', border: '1px solid #e4e4e7', fontSize: '0.9rem' }}
+                  />
+                  <div style={{ fontSize: '0.65rem', color: '#71717a', marginTop: '0.4rem', lineHeight: 1.4 }}>Pre-seed, Series A, etc., or N/A.</div>
                 </div>
               </div>
 
