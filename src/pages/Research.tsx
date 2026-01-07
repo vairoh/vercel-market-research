@@ -119,7 +119,7 @@ export default function ResearchPage() {
   };
 
   const handleSelectAll = () => {
-    const all = ["FinOps", "Orchestration", "Compliance", "Sovereignty", "Sustainability"];
+    const all = ["FinOps", "Compliance", "Sovereignty", "Sustainability"];
     setFormData(prev => ({ 
       ...prev, 
       finops: prev.finops.length === all.length ? [] : all 
