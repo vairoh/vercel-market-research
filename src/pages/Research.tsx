@@ -139,12 +139,6 @@ export default function ResearchPage() {
     handleInputChange('finops', next);
   };
 
-  const handleSelectAll = () => {
-    const all = ["FinOps", "Compliance", "Sovereignty", "Sustainability"];
-    const current = Array.isArray(formData.finops) ? formData.finops : [];
-    handleInputChange('finops', current.length === all.length ? [] : all);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep("SUBMISSION")) return;
