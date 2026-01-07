@@ -77,12 +77,15 @@ export default function ResearchPage() {
 
   const handleInputChange = (field: keyof typeof formData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field] && (typeof value === 'string' ? value.trim() : true)) {
-      setErrors(prev => {
-        const next = { ...prev };
-        delete next[field];
-        return next;
-      });
+    if (errors[field]) {
+      const hasValue = typeof value === 'string' ? value.trim() : (value !== null && value !== undefined && value !== '');
+      if (hasValue) {
+        setErrors(prev => {
+          const next = { ...prev };
+          delete next[field];
+          return next;
+        });
+      }
     }
   };
 
@@ -93,7 +96,8 @@ export default function ResearchPage() {
       if (!formData.hq_country.trim()) newErrors.hq_country = "Required";
       if (!formData.company_website.trim()) newErrors.company_website = "Required";
       if (!formData.year_founded.trim()) newErrors.year_founded = "Required";
-      if (!formData.estimated_size.trim()) newErrors.estimated_size = "Required";
+      const estimatedSizeStr = String(formData.estimated_size || '');
+      if (!estimatedSizeStr.trim()) newErrors.estimated_size = "Required";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
