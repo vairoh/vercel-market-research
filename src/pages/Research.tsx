@@ -13,6 +13,7 @@ export default function ResearchPage() {
   const [company, setCompany] = useState<any>(null);
   const [currentStep, setCurrentStep] = useState<Step>("GENERAL");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showPersonaTooltip, setShowPersonaTooltip] = useState(false);
 
   const [formData, setFormData] = useState({
     buyer_persona: [] as string[],
@@ -59,10 +60,10 @@ export default function ResearchPage() {
       const saved = localStorage.getItem(`research_progress_${companyKey}`);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Ensure finops is always an array
         setFormData({
           ...parsed,
-          finops: Array.isArray(parsed.finops) ? parsed.finops : []
+          finops: Array.isArray(parsed.finops) ? parsed.finops : [],
+          buyer_persona: Array.isArray(parsed.buyer_persona) ? parsed.buyer_persona : []
         });
       } else {
         setFormData(prev => ({
@@ -84,7 +85,7 @@ export default function ResearchPage() {
   const handleInputChange = (field: keyof typeof formData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      const hasValue = typeof value === 'string' ? value.trim() : (value !== null && value !== undefined && value !== '');
+      const hasValue = typeof value === 'string' ? value.trim() : (Array.isArray(value) ? value.length > 0 : !!value);
       if (hasValue) {
         setErrors(prev => {
           const next = { ...prev };
@@ -110,19 +111,9 @@ export default function ResearchPage() {
   };
 
   const handleNext = () => {
-    console.log('handleNext called, currentStep:', currentStep);
-    const isValid = validateStep(currentStep);
-    console.log('Validation result:', isValid, 'Errors:', errors);
-    if (isValid) {
-      if (currentStep === "GENERAL") {
-        console.log('Moving to ANALYSIS step');
-        setCurrentStep("ANALYSIS");
-      } else if (currentStep === "ANALYSIS") {
-        console.log('Moving to SUBMISSION step');
-        setCurrentStep("SUBMISSION");
-      }
-    } else {
-      console.log('Validation failed, not moving to next step');
+    if (validateStep(currentStep)) {
+      if (currentStep === "GENERAL") setCurrentStep("ANALYSIS");
+      else if (currentStep === "ANALYSIS") setCurrentStep("SUBMISSION");
     }
   };
 
@@ -260,7 +251,9 @@ export default function ResearchPage() {
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>Product Analysis</h3>
             <div style={{ display: 'grid', gap: '2.5rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>Categories</label>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  What kind of product do they have or focused on?
+                </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                   {(() => {
                     const finopsArray = Array.isArray(formData.finops) ? formData.finops : [];
@@ -271,8 +264,53 @@ export default function ResearchPage() {
                 </div>
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
                   Buyer Persona (who is website info aimed at?)
+                  <div 
+                    style={{ 
+                      marginLeft: '8px', 
+                      width: '18px', 
+                      height: '18px', 
+                      borderRadius: '50%', 
+                      border: '1px solid #71717a', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontSize: '0.7rem', 
+                      color: '#71717a', 
+                      cursor: 'pointer',
+                      position: 'relative'
+                    }}
+                    onMouseEnter={() => setShowPersonaTooltip(true)}
+                    onMouseLeave={() => setShowPersonaTooltip(false)}
+                    onClick={() => setShowPersonaTooltip(!showPersonaTooltip)}
+                  >
+                    ?
+                    {showPersonaTooltip && (
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '25px',
+                        left: '0',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #000000',
+                        padding: '12px',
+                        borderRadius: '8px',
+                        zIndex: 100,
+                        width: '300px',
+                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                        fontSize: '0.75rem',
+                        color: '#000000',
+                        fontStyle: 'normal',
+                        lineHeight: '1.4'
+                      }}>
+                        <strong>Examples:</strong><br />
+                        • “Reduce cloud spend by 30%” → CFO / FinOps<br />
+                        • “Ensure compliance with EU regulations” → CISO / Legal<br />
+                        • “Automate infrastructure at scale” → CTO / Platform teams<br />
+                        • “Meet CSRD reporting requirements” → Sustainability / ESG
+                      </div>
+                    )}
+                  </div>
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
                   {["CTO", "CFO", "CISO", "Sustainable Heads"].map(opt => (
@@ -282,13 +320,6 @@ export default function ResearchPage() {
                       handleInputChange('buyer_persona', next);
                     }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.buyer_persona) && formData.buyer_persona.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.buyer_persona) && formData.buyer_persona.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
                   ))}
-                </div>
-                <div style={{ fontSize: '0.8rem', color: '#71717a', fontStyle: 'italic', marginBottom: '0.5rem' }}>
-                  Examples:<br />
-                  “Reduce cloud spend by 30%” → CFO / FinOps<br />
-                  “Ensure compliance with EU regulations” → CISO / Legal<br />
-                  “Automate infrastructure at scale” → CTO / Platform teams<br />
-                  “Meet CSRD reporting requirements” → Sustainability / ESG
                 </div>
               </div>
             </div>
