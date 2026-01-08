@@ -309,48 +309,42 @@ export default function ResearchPage() {
                 <div style={{ 
                   display: 'flex', 
                   flexWrap: 'wrap', 
-                  gap: '0.75rem', 
+                  gap: '0.5rem', 
                   marginBottom: '0.75rem', 
-                  border: '2px solid #000', 
-                  padding: '1rem', 
-                  borderRadius: '16px', 
-                  minHeight: '60px', 
+                  border: '1px solid #e4e4e7', 
+                  padding: '0.5rem 0.75rem', 
+                  borderRadius: '8px', 
+                  minHeight: '45px', 
                   alignItems: 'center',
-                  backgroundColor: '#fff',
-                  boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)',
-                  transition: 'all 0.2s ease'
+                  backgroundColor: '#fff'
                 }}>
                   {formData.keywords.map((kw, idx) => (
                     <span key={idx} style={{ 
-                      backgroundColor: '#000', 
-                      color: '#fff',
-                      padding: '0.5rem 1rem', 
-                      borderRadius: '30px', 
+                      backgroundColor: '#eef2ff', 
+                      color: '#4f46e5',
+                      padding: '0.25rem 0.75rem', 
+                      borderRadius: '16px', 
                       fontSize: '0.8rem', 
                       display: 'flex', 
                       alignItems: 'center', 
-                      gap: '8px',
-                      fontWeight: 700,
-                      letterSpacing: '0.05em'
+                      gap: '6px',
+                      fontWeight: 500,
+                      border: '1px solid #e0e7ff'
                     }}>
-                      #{kw.toUpperCase()}
+                      #{kw}
                       <button 
                         type="button" 
                         onClick={() => removeKeyword(idx)} 
                         style={{ 
-                          background: 'rgba(255,255,255,0.2)', 
+                          background: 'none', 
                           border: 'none', 
                           cursor: 'pointer', 
-                          color: '#fff', 
-                          fontSize: '1rem', 
-                          width: '20px',
-                          height: '20px',
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
+                          color: '#4f46e5', 
+                          fontSize: '1.1rem', 
+                          display: 'flex', 
+                          alignItems: 'center', 
                           padding: 0,
-                          lineHeight: 1
+                          opacity: 0.7
                         }}
                       >×</button>
                     </span>
@@ -364,10 +358,9 @@ export default function ResearchPage() {
                       border: 'none', 
                       outline: 'none', 
                       flex: 1, 
-                      fontSize: '1rem', 
-                      padding: '8px',
-                      fontWeight: 500,
-                      color: '#000'
+                      fontSize: '0.9rem', 
+                      padding: '4px',
+                      color: '#18181b'
                     }}
                   />
                 </div>
