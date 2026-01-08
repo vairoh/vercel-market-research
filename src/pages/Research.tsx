@@ -332,18 +332,20 @@ export default function ResearchPage() {
                     )}
                   </div>
                 </label>
-                <div className={styles.keywordRow}>
-                  <div className={styles.chipGroup}>
-                    {formData.keywords.map((kw, idx) => (
-                      <span key={idx} className={styles.chip}>
-                        #{kw}
-                        <button 
-                          type="button" 
-                          onClick={() => removeKeyword(idx)} 
-                          className={styles.chipRemove}
-                        >×</button>
-                      </span>
-                    ))}
+                <div className={styles.keywordWrap}>
+                  <div className={styles.keywordRow}>
+                    <div className={styles.chipGroup}>
+                      {formData.keywords.map((kw, idx) => (
+                        <span key={idx} className={styles.chip}>
+                          #{kw}
+                          <button 
+                            type="button" 
+                            onClick={() => removeKeyword(idx)} 
+                            className={styles.chipRemove}
+                          >×</button>
+                        </span>
+                      ))}
+                    </div>
                   </div>
                   <input 
                     value={keywordInput}
