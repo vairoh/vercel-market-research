@@ -50,4 +50,5 @@
   font-size: 0.9rem;
   padding: 4px;
   color: #18181b;
+  width: auto !important; /* Force override global input width: 100% */
 }
