@@ -286,8 +286,27 @@ export default function ResearchPage() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
                   Homepage headline - Most used keywords (e.g. FinOps, AI, etc.)
+                  <div 
+                    style={{ 
+                      marginLeft: '8px', 
+                      width: '18px', 
+                      height: '18px', 
+                      borderRadius: '50%', 
+                      border: '1px solid #71717a', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontSize: '0.7rem', 
+                      color: '#71717a', 
+                      cursor: 'pointer',
+                      position: 'relative'
+                    }}
+                    title="Keywords will automatically be converted to hashtags for the analysis list."
+                  >
+                    ?
+                  </div>
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem', border: '1px solid #e4e4e7', padding: '0.5rem', borderRadius: '8px', minHeight: '45px', alignItems: 'center' }}>
                   {formData.keywords.map((kw, idx) => (
@@ -303,33 +322,6 @@ export default function ResearchPage() {
                     placeholder="Type keyword and press Enter..."
                     style={{ border: 'none', outline: 'none', flex: 1, fontSize: '0.85rem', padding: '4px' }}
                   />
-                </div>
-                <div style={{ fontSize: '0.65rem', color: '#71717a' }}>Keywords will automatically be converted to hashtags for the analysis list.</div>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  Is the product primarily sold as:
-                </label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-                  {["Cost-saving tool", "Risk-reduction tool", "Compliance necessity", "Platform modernization"].map(opt => (
-                    <button 
-                      key={opt} 
-                      type="button" 
-                      onClick={() => handleInputChange('primary_goal', opt)} 
-                      style={{ 
-                        padding: '0.75rem 1.75rem', 
-                        borderRadius: '30px', 
-                        backgroundColor: formData.primary_goal === opt ? '#000' : '#fff', 
-                        color: formData.primary_goal === opt ? '#fff' : '#000', 
-                        border: '1px solid #000', 
-                        cursor: 'pointer', 
-                        fontWeight: 600 
-                      }}
-                    >
-                      {opt}
-                    </button>
-                  ))}
                 </div>
               </div>
 
