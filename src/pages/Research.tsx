@@ -14,6 +14,7 @@ export default function ResearchPage() {
   const [currentStep, setCurrentStep] = useState<Step>("GENERAL");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPersonaTooltip, setShowPersonaTooltip] = useState(false);
+  const [keywordInput, setKeywordInput] = useState("");
 
   const [formData, setFormData] = useState({
     buyer_persona: [] as string[],
@@ -28,7 +29,9 @@ export default function ResearchPage() {
     product_category: "",
     finops: [] as string[],
     evidence_links: "",
-    notes: ""
+    notes: "",
+    keywords: [] as string[],
+    primary_goal: ""
   });
 
   useEffect(() => {
@@ -63,7 +66,8 @@ export default function ResearchPage() {
         setFormData({
           ...parsed,
           finops: Array.isArray(parsed.finops) ? parsed.finops : [],
-          buyer_persona: Array.isArray(parsed.buyer_persona) ? parsed.buyer_persona : []
+          buyer_persona: Array.isArray(parsed.buyer_persona) ? parsed.buyer_persona : [],
+          keywords: Array.isArray(parsed.keywords) ? parsed.keywords : []
         });
       } else {
         setFormData(prev => ({
@@ -130,6 +134,21 @@ export default function ResearchPage() {
     handleInputChange('finops', next);
   };
 
+  const handleAddKeyword = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const val = keywordInput.trim().replace(/^#/, '');
+      if (val && !formData.keywords.includes(val)) {
+        handleInputChange('keywords', [...formData.keywords, val]);
+      }
+      setKeywordInput("");
+    }
+  };
+
+  const removeKeyword = (idx: number) => {
+    handleInputChange('keywords', formData.keywords.filter((_, i) => i !== idx));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep("SUBMISSION")) return;
@@ -155,7 +174,9 @@ export default function ResearchPage() {
         company_key: company.company_key,
         created_by: session?.user.id,
         evidence_links: formData.evidence_links,
-        notes: formData.notes
+        notes: formData.notes,
+        keywords: formData.keywords.join(", "),
+        primary_goal: formData.primary_goal
       }]);
 
     if (error) {
@@ -263,6 +284,55 @@ export default function ResearchPage() {
                   })()}
                 </div>
               </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  Homepage headline - Most used keywords (e.g. FinOps, AI, etc.)
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem', border: '1px solid #e4e4e7', padding: '0.5rem', borderRadius: '8px', minHeight: '45px', alignItems: 'center' }}>
+                  {formData.keywords.map((kw, idx) => (
+                    <span key={idx} style={{ backgroundColor: '#f4f4f5', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid #e4e4e7' }}>
+                      #{kw}
+                      <button type="button" onClick={() => removeKeyword(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#71717a', fontSize: '0.9rem', padding: '0 2px' }}>×</button>
+                    </span>
+                  ))}
+                  <input 
+                    value={keywordInput}
+                    onChange={e => setKeywordInput(e.target.value)}
+                    onKeyDown={handleAddKeyword}
+                    placeholder="Type keyword and press Enter..."
+                    style={{ border: 'none', outline: 'none', flex: 1, fontSize: '0.85rem', padding: '4px' }}
+                  />
+                </div>
+                <div style={{ fontSize: '0.65rem', color: '#71717a' }}>Keywords will automatically be converted to hashtags for the analysis list.</div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  Is the product primarily sold as:
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  {["Cost-saving tool", "Risk-reduction tool", "Compliance necessity", "Platform modernization"].map(opt => (
+                    <button 
+                      key={opt} 
+                      type="button" 
+                      onClick={() => handleInputChange('primary_goal', opt)} 
+                      style={{ 
+                        padding: '0.75rem 1.75rem', 
+                        borderRadius: '30px', 
+                        backgroundColor: formData.primary_goal === opt ? '#000' : '#fff', 
+                        color: formData.primary_goal === opt ? '#fff' : '#000', 
+                        border: '1px solid #000', 
+                        cursor: 'pointer', 
+                        fontWeight: 600 
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
                   Buyer Persona (who is website info aimed at?)
@@ -296,12 +366,14 @@ export default function ResearchPage() {
                         padding: '12px',
                         borderRadius: '8px',
                         zIndex: 100,
-                        width: '300px',
-                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                        width: 'max-content',
+                        maxWidth: '450px',
+                        boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
                         fontSize: '0.75rem',
                         color: '#000000',
                         fontStyle: 'normal',
-                        lineHeight: '1.4'
+                        lineHeight: '1.4',
+                        whiteSpace: 'nowrap'
                       }}>
                         <strong>Examples:</strong><br />
                         • “Reduce cloud spend by 30%” → CFO / FinOps<br />
