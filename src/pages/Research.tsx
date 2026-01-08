@@ -13,6 +13,7 @@ export default function ResearchPage() {
   const [company, setCompany] = useState<any>(null);
   const [currentStep, setCurrentStep] = useState<Step>("GENERAL");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showKeywordTooltip, setShowKeywordTooltip] = useState(false);
   const [showPersonaTooltip, setShowPersonaTooltip] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
 
@@ -285,7 +286,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  Homepage headline - Most used keywords (e.g. FinOps, AI, etc.)
+                  Most used keywords on "{company?.company_name || 'the'}" homepage
                   <div 
                     style={{ 
                       marginLeft: '8px', 
@@ -301,9 +302,33 @@ export default function ResearchPage() {
                       cursor: 'pointer',
                       position: 'relative'
                     }}
-                    title="Keywords will automatically be converted to hashtags for the analysis list."
+                    onMouseEnter={() => setShowKeywordTooltip(true)}
+                    onMouseLeave={() => setShowKeywordTooltip(false)}
+                    onClick={() => setShowKeywordTooltip(!showKeywordTooltip)}
                   >
                     ?
+                    {showKeywordTooltip && (
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '25px',
+                        left: '0',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #000000',
+                        padding: '12px',
+                        borderRadius: '8px',
+                        zIndex: 100,
+                        width: 'max-content',
+                        maxWidth: '450px',
+                        boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+                        fontSize: '0.75rem',
+                        color: '#000000',
+                        fontStyle: 'normal',
+                        lineHeight: '1.4',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        (e.g. FinOps, AI, etc.)
+                      </div>
+                    )}
                   </div>
                 </label>
                 <div style={{ 
@@ -325,12 +350,12 @@ export default function ResearchPage() {
                       padding: '0.2rem 0.6rem', 
                       borderRadius: '16px', 
                       fontSize: '0.8rem', 
-                      display: 'inline-flex', 
+                      display: 'flex', 
                       alignItems: 'center', 
                       gap: '4px',
                       fontWeight: 500,
                       border: '1px solid #e4e4e7',
-                      width: 'fit-content'
+                      width: 'max-content'
                     }}>
                       #{kw}
                       <button 
