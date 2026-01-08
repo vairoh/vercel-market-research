@@ -5,10 +5,10 @@
   margin-bottom: 0.75rem;
   border: 1px solid #e4e4e7;
   padding: 0.4rem 0.6rem;
-  border-radius: 8px;
+  border-radius: 4px;
   min-height: 40px;
   align-items: center;
-  background-color: #fff;
+  background-color: transparent;
 }
 
 .chipGroup {
@@ -52,10 +52,11 @@
 .keywordInput {
   border: none !important;
   outline: none !important;
-  flex: 1 1 120px;
-  min-width: 120px;
+  flex: 1 1 180px;
+  min-width: 180px;
   font-size: 0.9rem;
   padding: 4px !important;
   color: #18181b;
+  background: transparent;
   width: auto !important;
 }
