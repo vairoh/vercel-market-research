@@ -30,8 +30,7 @@ export default function ResearchPage() {
     finops: [] as string[],
     evidence_links: "",
     notes: "",
-    keywords: [] as string[],
-    primary_goal: ""
+    keywords: [] as string[]
   });
 
   useEffect(() => {
@@ -175,8 +174,7 @@ export default function ResearchPage() {
         created_by: session?.user.id,
         evidence_links: formData.evidence_links,
         notes: formData.notes,
-        keywords: formData.keywords.join(", "),
-        primary_goal: formData.primary_goal
+        keywords: formData.keywords.join(", ")
       }]);
 
     if (error) {
@@ -308,19 +306,69 @@ export default function ResearchPage() {
                     ?
                   </div>
                 </label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem', border: '1px solid #e4e4e7', padding: '0.5rem', borderRadius: '8px', minHeight: '45px', alignItems: 'center' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  flexWrap: 'wrap', 
+                  gap: '0.75rem', 
+                  marginBottom: '0.75rem', 
+                  border: '2px solid #000', 
+                  padding: '1rem', 
+                  borderRadius: '16px', 
+                  minHeight: '60px', 
+                  alignItems: 'center',
+                  backgroundColor: '#fff',
+                  boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)',
+                  transition: 'all 0.2s ease'
+                }}>
                   {formData.keywords.map((kw, idx) => (
-                    <span key={idx} style={{ backgroundColor: '#f4f4f5', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid #e4e4e7' }}>
-                      #{kw}
-                      <button type="button" onClick={() => removeKeyword(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#71717a', fontSize: '0.9rem', padding: '0 2px' }}>×</button>
+                    <span key={idx} style={{ 
+                      backgroundColor: '#000', 
+                      color: '#fff',
+                      padding: '0.5rem 1rem', 
+                      borderRadius: '30px', 
+                      fontSize: '0.8rem', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px',
+                      fontWeight: 700,
+                      letterSpacing: '0.05em'
+                    }}>
+                      #{kw.toUpperCase()}
+                      <button 
+                        type="button" 
+                        onClick={() => removeKeyword(idx)} 
+                        style={{ 
+                          background: 'rgba(255,255,255,0.2)', 
+                          border: 'none', 
+                          cursor: 'pointer', 
+                          color: '#fff', 
+                          fontSize: '1rem', 
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: 0,
+                          lineHeight: 1
+                        }}
+                      >×</button>
                     </span>
                   ))}
                   <input 
                     value={keywordInput}
                     onChange={e => setKeywordInput(e.target.value)}
                     onKeyDown={handleAddKeyword}
-                    placeholder="Type keyword and press Enter..."
-                    style={{ border: 'none', outline: 'none', flex: 1, fontSize: '0.85rem', padding: '4px' }}
+                    placeholder="Type keyword + Enter..."
+                    style={{ 
+                      border: 'none', 
+                      outline: 'none', 
+                      flex: 1, 
+                      fontSize: '1rem', 
+                      padding: '8px',
+                      fontWeight: 500,
+                      color: '#000'
+                    }}
                   />
                 </div>
               </div>
