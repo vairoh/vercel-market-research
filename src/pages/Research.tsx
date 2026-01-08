@@ -286,7 +286,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  Most used keywords on "{company?.company_name || 'the'}" homepage
+                  Most used keywords on "{company?.company_name || 'the'}" website
                   <div 
                     style={{ 
                       marginLeft: '8px', 
@@ -326,7 +326,7 @@ export default function ResearchPage() {
                         lineHeight: '1.4',
                         whiteSpace: 'nowrap'
                       }}>
-                        (e.g. FinOps, AI, etc.)
+                        (e.g. FinOps, sovereign, etc.)
                       </div>
                     )}
                   </div>
@@ -350,12 +350,12 @@ export default function ResearchPage() {
                       padding: '0.2rem 0.6rem', 
                       borderRadius: '16px', 
                       fontSize: '0.8rem', 
-                      display: 'flex', 
+                      display: 'inline-flex', 
                       alignItems: 'center', 
                       gap: '4px',
                       fontWeight: 500,
                       border: '1px solid #e4e4e7',
-                      width: 'max-content'
+                      width: 'fit-content'
                     }}>
                       #{kw}
                       <button 
