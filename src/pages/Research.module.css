@@ -11,6 +11,13 @@
   background-color: #fff;
 }
 
+.chipGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+}
+
 .chip {
   display: inline-flex;
   align-items: center;
@@ -43,12 +50,12 @@
 }
 
 .keywordInput {
-  border: none;
-  outline: none;
+  border: none !important;
+  outline: none !important;
   flex: 1 1 120px;
-  min-width: 0;
+  min-width: 120px;
   font-size: 0.9rem;
-  padding: 4px;
+  padding: 4px !important;
   color: #18181b;
-  width: auto !important; /* Force override global input width: 100% */
+  width: auto !important;
 }

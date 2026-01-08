@@ -333,16 +333,18 @@ export default function ResearchPage() {
                   </div>
                 </label>
                 <div className={styles.keywordRow}>
-                  {formData.keywords.map((kw, idx) => (
-                    <span key={idx} className={styles.chip}>
-                      #{kw}
-                      <button 
-                        type="button" 
-                        onClick={() => removeKeyword(idx)} 
-                        className={styles.chipRemove}
-                      >×</button>
-                    </span>
-                  ))}
+                  <div className={styles.chipGroup}>
+                    {formData.keywords.map((kw, idx) => (
+                      <span key={idx} className={styles.chip}>
+                        #{kw}
+                        <button 
+                          type="button" 
+                          onClick={() => removeKeyword(idx)} 
+                          className={styles.chipRemove}
+                        >×</button>
+                      </span>
+                    ))}
+                  </div>
                   <input 
                     value={keywordInput}
                     onChange={e => setKeywordInput(e.target.value)}
