@@ -323,7 +323,7 @@ export default function ResearchPage() {
                         boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
                         fontSize: '0.75rem',
                         color: '#000000',
-                        fontStyle: 'normal',
+                        fontWeight: 'normal',
                         lineHeight: '1.4',
                         whiteSpace: 'nowrap'
                       }}>
@@ -395,7 +395,7 @@ export default function ResearchPage() {
                         boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
                         fontSize: '0.75rem',
                         color: '#000000',
-                        fontStyle: 'normal',
+                        fontWeight: 'normal',
                         lineHeight: '1.4',
                         whiteSpace: 'nowrap'
                       }}>
