@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import styles from "./Research.module.css";
 
 type Step = "GENERAL" | "ANALYSIS" | "SUBMISSION";
 
@@ -331,47 +332,14 @@ export default function ResearchPage() {
                     )}
                   </div>
                 </label>
-                <div style={{ 
-                  display: 'flex', 
-                  flexWrap: 'wrap', 
-                  gap: '0.4rem', 
-                  marginBottom: '0.75rem', 
-                  border: '1px solid #e4e4e7', 
-                  padding: '0.4rem 0.6rem', 
-                  borderRadius: '8px', 
-                  minHeight: '40px', 
-                  alignItems: 'center',
-                  backgroundColor: '#fff'
-                }}>
+                <div className={styles.keywordRow}>
                   {formData.keywords.map((kw, idx) => (
-                    <span key={idx} style={{ 
-                      backgroundColor: '#f4f4f5', 
-                      color: '#18181b',
-                      padding: '0.2rem 0.6rem', 
-                      borderRadius: '16px', 
-                      fontSize: '0.8rem', 
-                      display: 'inline-flex', 
-                      alignItems: 'center', 
-                      gap: '4px',
-                      fontWeight: 500,
-                      border: '1px solid #e4e4e7',
-                      width: 'fit-content'
-                    }}>
+                    <span key={idx} className={styles.chip}>
                       #{kw}
                       <button 
                         type="button" 
                         onClick={() => removeKeyword(idx)} 
-                        style={{ 
-                          background: 'none', 
-                          border: 'none', 
-                          cursor: 'pointer', 
-                          color: '#71717a', 
-                          fontSize: '1rem', 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          padding: 0,
-                          lineHeight: 1
-                        }}
+                        className={styles.chipRemove}
                       >×</button>
                     </span>
                   ))}
@@ -380,15 +348,7 @@ export default function ResearchPage() {
                     onChange={e => setKeywordInput(e.target.value)}
                     onKeyDown={handleAddKeyword}
                     placeholder="Type keyword + Enter..."
-                    style={{ 
-                      border: 'none', 
-                      outline: 'none', 
-                      flex: '1 1 120px', 
-                      fontSize: '0.9rem', 
-                      padding: '4px',
-                      color: '#18181b',
-                      minWidth: '0'
-                    }}
+                    className={styles.keywordInput}
                   />
                 </div>
               </div>

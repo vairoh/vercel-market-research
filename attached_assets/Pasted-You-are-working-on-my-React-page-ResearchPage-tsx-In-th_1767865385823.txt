@@ -1,0 +1,91 @@
+You are working on my React page (ResearchPage.tsx). In the “Most used keywords” input, each selected keyword renders as a pill/chip (e.g. “#finops ×”). The pill is stretching too wide, taking up most of the row, instead of wrapping tightly around its content.
+
+Root cause: the chips are flex items inside a flex-wrap container, and their sizing contract is not defined. In flex layout, relying on width: fit-content is not robust. Some CSS (global reset or inherited styles) may be causing the chip element to behave like a block or to grow (flex-grow / width: 100%), which makes it stretch. The professional fix is to define a proper “chip” style contract that is content-sized and non-growing, then apply it consistently via a class or component.
+
+Implement this fix:
+1) Create a small scoped CSS file (CSS module preferred) for the keyword area, and move chip styling there (avoid inline width hacks).
+2) Ensure the chip has:
+   - display: inline-flex
+   - flex: 0 0 auto (critical so it never grows)
+   - white-space: nowrap (keeps “#kw ×” on one line)
+   - max-width: 100% (prevents overflow on very long keywords)
+3) Ensure the parent container remains:
+   - display: flex; flex-wrap: wrap; gap: ...
+4) Update ResearchPage.tsx to use className for the container and chip.
+
+Concrete code to implement:
+
+A) Add a CSS module file: src/pages/ResearchPage.module.css (or similar)
+
+.keywordRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #e4e4e7;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  min-height: 40px;
+  align-items: center;
+  background-color: #fff;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  background-color: #f4f4f5;
+  color: #18181b;
+  border: 1px solid #e4e4e7;
+
+  flex: 0 0 auto;     /* do not grow */
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.chipRemove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #71717a;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.keywordInput {
+  border: none;
+  outline: none;
+  flex: 1 1 120px;
+  min-width: 0;
+  font-size: 0.9rem;
+  padding: 4px;
+  color: #18181b;
+}
+
+B) In ResearchPage.tsx import the module:
+import styles from "./ResearchPage.module.css";
+
+C) Replace the keyword container <div style={...}> with:
+<div className={styles.keywordRow}>
+
+D) Replace the chip <span style={...}> with:
+<span className={styles.chip}>
+
+E) Replace the remove button style with:
+<button className={styles.chipRemove} ...>×</button>
+
+F) Replace the input style with:
+<input className={styles.keywordInput} ... />
+
+After implementing, verify in DevTools that each chip has flex-grow: 0 and width is auto/content-sized, and that chips no longer stretch.
+
+Do not introduce hardcoded widths; do not use fit-content for the chip width. Use the flex sizing contract above.
