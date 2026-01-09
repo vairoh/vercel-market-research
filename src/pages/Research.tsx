@@ -90,7 +90,15 @@ export default function ResearchPage() {
       const notExpired = expiresAt > Date.now();
 
       if (!isOwner || !isReserved || !notExpired) {
-        setReservationError("Your reservation is not active or no longer belongs to you. Please reserve this company again.");
+        let message = "Reservation unavailable. Please reserve this company again.";
+        if (!isOwner && data.reserved_by) {
+          message = "The company you are trying to reserve is already taken by another user. Please try another company name.";
+        } else if (!isReserved) {
+          message = "This reservation is no longer active. Please reserve the company again.";
+        } else if (!notExpired) {
+          message = "This reservation has expired. Please reserve the company again.";
+        }
+        setReservationError(message);
         setReservationValid(false);
         setLoading(false);
         return;
