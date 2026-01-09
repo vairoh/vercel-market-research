@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
+import buttonStyles from "./styles/buttons.module.css";
 import ReservePage from "./pages/Reserve";
 import ResearchPage from "./pages/Research";
 
@@ -76,7 +77,7 @@ function Login() {
                   style={{ borderRadius: '8px' }}
                 />
               </div>
-              <button className="primaryButton" onClick={sendMagicLink} style={{ width: 'auto', borderRadius: '30px' }}>
+              <button className={`${buttonStyles.primary} ${buttonStyles.pill}`} onClick={sendMagicLink} style={{ width: 'auto' }}>
                 Send Link
               </button>
               {error && (

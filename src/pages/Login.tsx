@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import buttonStyles from "../styles/buttons.module.css";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -73,18 +74,13 @@ export default function LoginPage() {
       />
 
       <button
-        className="primaryButton"
+        className={`${buttonStyles.primary} ${buttonStyles.pill} ${buttonStyles.fullWidth}`}
         onClick={sendMagicLink}
         disabled={loading}
         style={{
           marginTop: 14,
-          width: "100%",
           padding: "12px 14px",
-          borderRadius: 10,
-          border: "none",
           cursor: loading ? "not-allowed" : "pointer",
-          background: "#111",
-          color: "#fff",
           fontWeight: 600,
         }}
       >
@@ -92,16 +88,12 @@ export default function LoginPage() {
       </button>
 
       <button
+        className={`${buttonStyles.secondary} ${buttonStyles.pill} ${buttonStyles.fullWidth}`}
         onClick={goReserve}
         style={{
           marginTop: 10,
-          width: "100%",
           padding: "12px 14px",
-          borderRadius: 10,
-          border: "1px solid #111",
           cursor: "pointer",
-          background: "#fff",
-          color: "#111",
           fontWeight: 600,
         }}
       >

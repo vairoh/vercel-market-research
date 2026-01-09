@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import buttonStyles from "../styles/buttons.module.css";
 
 type ReserveResult = {
   company_key: string;
@@ -163,6 +164,7 @@ export default function ReservePage() {
       }}>
         <h2 style={{ margin: 0, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 800 }}>Company Research Assignment</h2>
         <button 
+          className={buttonStyles.text}
           onClick={onLogout}
           style={{ 
             background: 'transparent', 
@@ -218,10 +220,10 @@ export default function ReservePage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
             <button
-              className="primaryButton"
+              className={`${buttonStyles.primary} ${buttonStyles.pill}`}
               onClick={onReserve}
               disabled={loading || !!reserved}
-              style={{ width: 'auto', borderRadius: '30px', height: '42px' }}
+              style={{ width: 'auto', height: '42px' }}
             >
               {loading ? "Assigning..." : "Reserve Company"}
             </button>
@@ -309,9 +311,9 @@ export default function ReservePage() {
 
             <div style={{ marginTop: '3rem', textAlign: 'center' }}>
               <button 
-                className="primaryButton"
+                className={`${buttonStyles.primary} ${buttonStyles.pill}`}
                 onClick={() => navigate(`/research?company_key=${reserved.company_key}`)}
-                style={{ width: 'auto', borderRadius: '30px', padding: '1rem 3rem' }}
+                style={{ width: 'auto', padding: '1rem 3rem' }}
               >
                 Continue to Research
               </button>

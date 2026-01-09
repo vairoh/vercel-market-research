@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import styles from "./Research.module.css";
+import buttonStyles from "../styles/buttons.module.css";
 
 type Step = "GENERAL" | "ANALYSIS" | "SUBMISSION";
 
@@ -345,19 +346,7 @@ export default function ResearchPage() {
                     )}
                   </div>
                 </label>
-                <div className={styles.keywordRow}>
-                  <div className={styles.chipGroup}>
-                    {formData.keywords.map((kw, idx) => (
-                      <span key={idx} className={styles.chip}>
-                        #{kw}
-                        <button 
-                          type="button" 
-                          onClick={() => removeKeyword(idx)} 
-                          className={styles.chipRemove}
-                        >×</button>
-                      </span>
-                    ))}
-                  </div>
+                <div className={styles.keywordWrap}>
                   <input 
                     value={keywordInput}
                     onChange={e => setKeywordInput(e.target.value)}
@@ -365,6 +354,20 @@ export default function ResearchPage() {
                     placeholder="Type keyword + Enter..."
                     className={styles.keywordInput}
                   />
+                  {formData.keywords.length > 0 && (
+                    <div className={styles.chipGroup}>
+                      {formData.keywords.map((kw, idx) => (
+                        <span key={idx} className={styles.chip}>
+                          #{kw}
+                          <button 
+                            type="button" 
+                            onClick={() => removeKeyword(idx)} 
+                            className={styles.chipRemove}
+                          >×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -460,11 +463,11 @@ export default function ResearchPage() {
         )}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #f4f4f5' }}>
-          <button type="button" onClick={handleBack} disabled={currentStep === "GENERAL"} style={{ padding: '0.75rem 2.5rem', borderRadius: '30px', border: '1px solid #000', cursor: 'pointer', visibility: currentStep === "GENERAL" ? 'hidden' : 'visible' }}>Back</button>
+          <button type="button" className={`${buttonStyles.secondary} ${buttonStyles.pill}`} onClick={handleBack} disabled={currentStep === "GENERAL"} style={{ padding: '0.75rem 2.5rem', cursor: 'pointer', visibility: currentStep === "GENERAL" ? 'hidden' : 'visible' }}>Back</button>
           {currentStep !== "SUBMISSION" ? (
-            <button className="primaryButton" type="button" onClick={handleNext} style={{ padding: '0.75rem 2.5rem', borderRadius: '30px', backgroundColor: '#000', color: '#fff', cursor: 'pointer' }}>Next</button>
+            <button className={`${buttonStyles.primary} ${buttonStyles.pill}`} type="button" onClick={handleNext} style={{ padding: '0.75rem 2.5rem', cursor: 'pointer' }}>Next</button>
           ) : (
-            <button className="primaryButton" onClick={handleSubmit} disabled={submitting} style={{ padding: '0.75rem 2.5rem', borderRadius: '30px', backgroundColor: '#000', color: '#fff', cursor: 'pointer' }}>{submitting ? "Processing..." : "Submit Research"}</button>
+            <button className={`${buttonStyles.primary} ${buttonStyles.pill}`} onClick={handleSubmit} disabled={submitting} style={{ padding: '0.75rem 2.5rem', cursor: 'pointer' }}>{submitting ? "Processing..." : "Submit Research"}</button>
           )}
         </div>
       </div>
