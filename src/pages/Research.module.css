@@ -8,10 +8,12 @@
 }
 
 .chipGroup {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   align-items: flex-start;
+  width: max-content;
+  justify-self: start;
 }
 
 .chip {
@@ -31,9 +33,11 @@
   flex: 0 0 auto;     /* do not grow */
   white-space: nowrap;
   width: max-content;
+  max-width: max-content;
 }
 
 .chipRemove {
+  all: unset;
   background: transparent;
   border: none;
   cursor: pointer;
