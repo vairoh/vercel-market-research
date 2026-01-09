@@ -49,6 +49,7 @@ export default function ResearchPage() {
   const [showConclusionTooltip, setShowConclusionTooltip] = useState(false);
   const [showEvidenceTooltip, setShowEvidenceTooltip] = useState(false);
   const [showProductFocusTooltip, setShowProductFocusTooltip] = useState(false);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
   const [cloudSupportInput, setCloudSupportInput] = useState("");
   const [customerNameInput, setCustomerNameInput] = useState("");
@@ -180,10 +181,13 @@ export default function ResearchPage() {
   };
 
   const handleNext = () => {
-    if (validateStep(currentStep)) {
-      if (currentStep === "GENERAL") setCurrentStep("ANALYSIS");
-      else if (currentStep === "ANALYSIS") setCurrentStep("SUBMISSION");
+    if (!validateStep(currentStep)) {
+      setShowValidationErrors(true);
+      return;
     }
+    setShowValidationErrors(false);
+    if (currentStep === "GENERAL") setCurrentStep("ANALYSIS");
+    else if (currentStep === "ANALYSIS") setCurrentStep("SUBMISSION");
   };
 
   const handleBack = () => {
@@ -246,7 +250,11 @@ export default function ResearchPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateStep("SUBMISSION")) return;
+    if (!validateStep("SUBMISSION")) {
+      setShowValidationErrors(true);
+      return;
+    }
+    setShowValidationErrors(false);
     
     setSubmitting(true);
     const { data: { session } } = await supabase.auth.getSession();
