@@ -1,23 +1,24 @@
 import type { ResearchForm, ValidationErrors } from "../domain/research";
 
-export const validateGeneralStep = (formData: ResearchForm): ValidationErrors => {
+export const validateGeneralStep = (formData?: Partial<ResearchForm>): ValidationErrors => {
   const errors: ValidationErrors = {};
-  const candidate_name = formData.candidate_name ?? "";
-  const hq_country = formData.hq_country ?? "";
-  const company_website = formData.company_website ?? "";
-  const year_founded = formData.year_founded ?? "";
-  const estimatedSizeStr = String(formData.estimated_size ?? "");
+  const data = formData || {};
+  const candidate_name = String(data.candidate_name ?? "").trim();
+  const hq_country = String(data.hq_country ?? "").trim();
+  const company_website = String(data.company_website ?? "").trim();
+  const year_founded = String(data.year_founded ?? "").trim();
+  const estimatedSizeStr = String(data.estimated_size ?? "").trim();
 
-  if (!candidate_name.trim()) errors.candidate_name = "Required";
-  if (!hq_country.trim()) errors.hq_country = "Required";
-  if (!company_website.trim()) errors.company_website = "Required";
-  if (!year_founded.trim()) errors.year_founded = "Required";
-  if (!estimatedSizeStr.trim()) errors.estimated_size = "Required";
+  if (!candidate_name) errors.candidate_name = "Required";
+  if (!hq_country) errors.hq_country = "Required";
+  if (!company_website) errors.company_website = "Required";
+  if (!year_founded) errors.year_founded = "Required";
+  if (!estimatedSizeStr) errors.estimated_size = "Required";
 
   return errors;
 };
 
-export const validateStep = (step: "GENERAL" | "ANALYSIS" | "SUBMISSION", formData: ResearchForm): ValidationErrors => {
+export const validateStep = (step: "GENERAL" | "ANALYSIS" | "SUBMISSION", formData?: Partial<ResearchForm>): ValidationErrors => {
   if (step === "GENERAL") return validateGeneralStep(formData);
   // Additional steps can extend validation here.
   return {};
