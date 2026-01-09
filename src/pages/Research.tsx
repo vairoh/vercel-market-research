@@ -50,6 +50,7 @@ export default function ResearchPage() {
   const [showEvidenceTooltip, setShowEvidenceTooltip] = useState(false);
   const [showProductFocusTooltip, setShowProductFocusTooltip] = useState(false);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
+  const [shakeValidation, setShakeValidation] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
   const [cloudSupportInput, setCloudSupportInput] = useState("");
   const [customerNameInput, setCustomerNameInput] = useState("");
@@ -183,6 +184,8 @@ export default function ResearchPage() {
   const handleNext = () => {
     if (!validateStep(currentStep)) {
       setShowValidationErrors(true);
+      setShakeValidation(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     setShowValidationErrors(false);
@@ -252,6 +255,8 @@ export default function ResearchPage() {
     e.preventDefault();
     if (!validateStep("SUBMISSION")) {
       setShowValidationErrors(true);
+      setShakeValidation(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     setShowValidationErrors(false);
@@ -384,7 +389,19 @@ export default function ResearchPage() {
           <div className="animate-fade-in">
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>Product Analysis</h3>
             {showValidationErrors && Object.keys(errors).length > 0 && (
-              <div style={{ marginBottom: '1.5rem', padding: '0.75rem 1rem', border: '1px solid #ef4444', borderRadius: '8px', fontSize: '0.75rem', color: '#ef4444', fontWeight: 600 }}>
+              <div
+                onAnimationEnd={() => setShakeValidation(false)}
+                style={{
+                  marginBottom: '1.5rem',
+                  padding: '0.75rem 1rem',
+                  border: '1px solid #ef4444',
+                  borderRadius: '8px',
+                  fontSize: '0.75rem',
+                  color: '#ef4444',
+                  fontWeight: 600,
+                  animation: shakeValidation ? 'validationBounce 420ms ease' : 'none'
+                }}
+              >
                 Please complete all required fields before continuing.
               </div>
             )}
@@ -834,7 +851,19 @@ export default function ResearchPage() {
           <div className="animate-fade-in">
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>Conclusion</h3>
             {showValidationErrors && Object.keys(errors).length > 0 && (
-              <div style={{ marginBottom: '1.5rem', padding: '0.75rem 1rem', border: '1px solid #ef4444', borderRadius: '8px', fontSize: '0.75rem', color: '#ef4444', fontWeight: 600 }}>
+              <div
+                onAnimationEnd={() => setShakeValidation(false)}
+                style={{
+                  marginBottom: '1.5rem',
+                  padding: '0.75rem 1rem',
+                  border: '1px solid #ef4444',
+                  borderRadius: '8px',
+                  fontSize: '0.75rem',
+                  color: '#ef4444',
+                  fontWeight: 600,
+                  animation: shakeValidation ? 'validationBounce 420ms ease' : 'none'
+                }}
+              >
                 Please complete all required fields before continuing.
               </div>
             )}
