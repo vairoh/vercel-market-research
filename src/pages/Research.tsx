@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import styles from "./Research.module.css";
+import styles from "./ResearchKeywords.module.css";
 import { logError, logInfo, logWarn } from "../observability/logger";
 import { fetchCompanyByKey, fetchSession, submitResearch } from "../services/researchService";
 import type { ResearchForm, Step } from "../domain/research";
@@ -183,7 +183,7 @@ export default function ResearchPage() {
       created_by: session?.user.id,
       evidence_links: formData.evidence_links,
       notes: formData.notes,
-      keywords: formData.keywords.join(", ")
+      keywords: Array.isArray(formData.keywords) ? formData.keywords.join(", ") : ""
     };
 
     const { error } = await submitResearch(payload);

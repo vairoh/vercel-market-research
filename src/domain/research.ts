@@ -24,3 +24,23 @@ export type CompanyRecord = {
 };
 
 export type ValidationErrors = Record<string, string>;
+
+export type ResearchSubmissionPayload = {
+  candidate_name: string;
+  candidate_email: string;
+  company_website: string;
+  hq_country: string;
+  year_founded: string;
+  estimated_size: string | number;
+  funding_stage: string;
+  product_name: string;
+  product_category: string;
+  finops: string;
+  buyer_persona: string;
+  company_name: string;
+  company_key: string;
+  created_by?: string | null;
+  evidence_links: string;
+  notes: string;
+  keywords: string;
+};

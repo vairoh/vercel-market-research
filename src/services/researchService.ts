@@ -1,5 +1,5 @@
 import { supabase } from "../supabaseClient";
-import type { CompanyRecord, ResearchForm } from "../domain/research";
+import type { CompanyRecord, ResearchSubmissionPayload } from "../domain/research";
 
 export const fetchSession = async () => {
   const { data } = await supabase.auth.getSession();
@@ -15,6 +15,5 @@ export const fetchCompanyByKey = async (companyKey: string) => {
   return { data: data as CompanyRecord | null, error };
 };
 
-export const submitResearch = async (payload: ResearchForm & { company_name: string; company_key: string; created_by?: string | null }) => {
-  return supabase.from("research_submissions").insert([payload]);
-};
+export const submitResearch = async (payload: ResearchSubmissionPayload) =>
+  supabase.from("research_submissions").insert([payload]);
