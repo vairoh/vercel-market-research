@@ -5,6 +5,23 @@ import styles from "./Research.module.css";
 
 type Step = "GENERAL" | "ANALYSIS" | "SUBMISSION";
 
+const initialFormData = {
+  buyer_persona: [] as string[],
+  candidate_name: "",
+  candidate_email: "",
+  company_website: "",
+  hq_country: "",
+  year_founded: "",
+  estimated_size: "",
+  funding_stage: "",
+  product_name: "",
+  product_category: "",
+  finops: [] as string[],
+  evidence_links: "",
+  notes: "",
+  keywords: [] as string[]
+};
+
 export default function ResearchPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -18,22 +35,7 @@ export default function ResearchPage() {
   const [showPersonaTooltip, setShowPersonaTooltip] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
 
-  const [formData, setFormData] = useState({
-    buyer_persona: [] as string[],
-    candidate_name: "",
-    candidate_email: "",
-    company_website: "",
-    hq_country: "",
-    year_founded: "",
-    estimated_size: "",
-    funding_stage: "",
-    product_name: "",
-    product_category: "",
-    finops: [] as string[],
-    evidence_links: "",
-    notes: "",
-    keywords: [] as string[]
-  });
+  const [formData, setFormData] = useState({ ...initialFormData });
 
   useEffect(() => {
     const init = async () => {
@@ -63,13 +65,20 @@ export default function ResearchPage() {
       
       const saved = localStorage.getItem(`research_progress_${companyKey}`);
       if (saved) {
-        const parsed = JSON.parse(saved);
-        setFormData({
-          ...parsed,
-          finops: Array.isArray(parsed.finops) ? parsed.finops : [],
-          buyer_persona: Array.isArray(parsed.buyer_persona) ? parsed.buyer_persona : [],
-          keywords: Array.isArray(parsed.keywords) ? parsed.keywords : []
-        });
+        try {
+          const parsed = JSON.parse(saved);
+          const safeParsed = parsed && typeof parsed === "object" ? parsed : {};
+          setFormData(prev => ({
+            ...initialFormData,
+            ...prev,
+            ...safeParsed,
+            finops: Array.isArray(safeParsed.finops) ? safeParsed.finops : [],
+            buyer_persona: Array.isArray(safeParsed.buyer_persona) ? safeParsed.buyer_persona : [],
+            keywords: Array.isArray(safeParsed.keywords) ? safeParsed.keywords : []
+          }));
+        } catch {
+          setFormData(prev => ({ ...initialFormData, ...prev }));
+        }
       } else {
         setFormData(prev => ({
           ...prev,
@@ -104,10 +113,14 @@ export default function ResearchPage() {
   const validateStep = (step: Step) => {
     const newErrors: Record<string, string> = {};
     if (step === "GENERAL") {
-      if (!formData.candidate_name.trim()) newErrors.candidate_name = "Required";
-      if (!formData.hq_country.trim()) newErrors.hq_country = "Required";
-      if (!formData.company_website.trim()) newErrors.company_website = "Required";
-      if (!formData.year_founded.trim()) newErrors.year_founded = "Required";
+      const candidateName = String(formData.candidate_name || "");
+      const hqCountry = String(formData.hq_country || "");
+      const companyWebsite = String(formData.company_website || "");
+      const yearFounded = String(formData.year_founded || "");
+      if (!candidateName.trim()) newErrors.candidate_name = "Required";
+      if (!hqCountry.trim()) newErrors.hq_country = "Required";
+      if (!companyWebsite.trim()) newErrors.company_website = "Required";
+      if (!yearFounded.trim()) newErrors.year_founded = "Required";
       const estimatedSizeStr = String(formData.estimated_size || '');
       if (!estimatedSizeStr.trim()) newErrors.estimated_size = "Required";
     }
