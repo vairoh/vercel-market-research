@@ -38,13 +38,16 @@ export default function ResearchPage() {
 
   useEffect(() => {
     const init = async () => {
+      console.log("[ResearchPage] init started", { companyKey });
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
+        console.log("[ResearchPage] no session, redirecting to login");
         navigate("/login");
         return;
       }
 
       if (!companyKey) {
+        console.log("[ResearchPage] no companyKey, redirecting to reserve");
         navigate("/reserve");
         return;
       }
@@ -56,6 +59,7 @@ export default function ResearchPage() {
         .single();
 
       if (error || !data) {
+        console.error("[ResearchPage] fetch company error", error);
         navigate("/reserve");
         return;
       }
@@ -63,9 +67,11 @@ export default function ResearchPage() {
       setCompany(data);
       
       const saved = localStorage.getItem(`research_progress_${companyKey}`);
+      console.log("[ResearchPage] loading saved progress", { saved });
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
+          console.log("[ResearchPage] parsed progress", parsed);
           if (parsed) {
             setFormData(prev => ({
               ...prev,
@@ -76,7 +82,7 @@ export default function ResearchPage() {
             }));
           }
         } catch (e) {
-          console.error("Failed to parse progress", e);
+          console.error("[ResearchPage] Failed to parse progress", e);
         }
       } else {
         setFormData(prev => ({
@@ -91,11 +97,13 @@ export default function ResearchPage() {
 
   useEffect(() => {
     if (!loading && companyKey) {
+      console.log("[ResearchPage] auto-saving progress", formData);
       localStorage.setItem(`research_progress_${companyKey}`, JSON.stringify(formData));
     }
   }, [formData, loading, companyKey]);
 
   const handleInputChange = (field: keyof typeof formData, value: any) => {
+    console.log("[ResearchPage] handleInputChange", { field, value });
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       const valString = String(value ?? "");
@@ -111,30 +119,48 @@ export default function ResearchPage() {
   };
 
   const validateStep = (step: Step) => {
+    console.log("[ResearchPage] validateStep", { step, formData });
     const newErrors: Record<string, string> = {};
     if (step === "GENERAL") {
-      if (!(formData.candidate_name ?? "").trim()) newErrors.candidate_name = "Required";
-      if (!(formData.hq_country ?? "").trim()) newErrors.hq_country = "Required";
-      if (!(formData.company_website ?? "").trim()) newErrors.company_website = "Required";
-      if (!(formData.year_founded ?? "").trim()) newErrors.year_founded = "Required";
-      const estimatedSizeStr = String(formData.estimated_size ?? "");
-      if (!estimatedSizeStr.trim()) newErrors.estimated_size = "Required";
+      try {
+        const candidate_name = formData.candidate_name ?? "";
+        const hq_country = formData.hq_country ?? "";
+        const company_website = formData.company_website ?? "";
+        const year_founded = formData.year_founded ?? "";
+        const estimatedSizeStr = String(formData.estimated_size ?? "");
+
+        console.log("[ResearchPage] checking fields", { candidate_name, hq_country, company_website, year_founded, estimatedSizeStr });
+
+        if (!candidate_name.trim()) newErrors.candidate_name = "Required";
+        if (!hq_country.trim()) newErrors.hq_country = "Required";
+        if (!company_website.trim()) newErrors.company_website = "Required";
+        if (!year_founded.trim()) newErrors.year_founded = "Required";
+        if (!estimatedSizeStr.trim()) newErrors.estimated_size = "Required";
+      } catch (err) {
+        console.error("[ResearchPage] Error in validateStep GENERAL", err);
+      }
     }
+    console.log("[ResearchPage] validation results", { newErrors });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleNext = () => {
-    if (!validateStep(currentStep)) {
+    console.log("[ResearchPage] handleNext clicked", { currentStep });
+    const isValid = validateStep(currentStep);
+    if (!isValid) {
+      console.log("[ResearchPage] validation failed");
       setShowValidationErrors(true);
       return;
     }
+    console.log("[ResearchPage] validation succeeded, advancing step");
     setShowValidationErrors(false);
     if (currentStep === "GENERAL") setCurrentStep("ANALYSIS");
     else if (currentStep === "ANALYSIS") setCurrentStep("SUBMISSION");
   };
 
   const handleBack = () => {
+    console.log("[ResearchPage] handleBack clicked", { currentStep });
     if (currentStep === "ANALYSIS") setCurrentStep("GENERAL");
     else if (currentStep === "SUBMISSION") setCurrentStep("ANALYSIS");
   };
@@ -164,6 +190,7 @@ export default function ResearchPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("[ResearchPage] handleSubmit clicked");
     if (!validateStep("SUBMISSION")) return;
     
     setSubmitting(true);
@@ -192,9 +219,11 @@ export default function ResearchPage() {
       }]);
 
     if (error) {
+      console.error("[ResearchPage] submission error", error);
       alert("Error saving: " + error.message);
       setSubmitting(false);
     } else {
+      console.log("[ResearchPage] submission successful");
       localStorage.removeItem(`research_progress_${companyKey}`);
       navigate("/reserve");
     }
