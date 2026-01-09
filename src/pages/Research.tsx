@@ -10,6 +10,8 @@ const initialFormData = {
   buyer_persona: [] as string[],
   cloud_support: [] as string[],
   target_customer_size: [] as string[],
+  target_locations: [] as string[],
+  implementation_details: "",
   candidate_name: "",
   candidate_email: "",
   company_website: "",
@@ -81,7 +83,8 @@ export default function ResearchPage() {
             buyer_persona: Array.isArray(safeParsed.buyer_persona) ? safeParsed.buyer_persona : [],
             keywords: Array.isArray(safeParsed.keywords) ? safeParsed.keywords : [],
             cloud_support: Array.isArray(safeParsed.cloud_support) ? safeParsed.cloud_support : [],
-            target_customer_size: Array.isArray(safeParsed.target_customer_size) ? safeParsed.target_customer_size : []
+            target_customer_size: Array.isArray(safeParsed.target_customer_size) ? safeParsed.target_customer_size : [],
+            target_locations: Array.isArray(safeParsed.target_locations) ? safeParsed.target_locations : []
           }));
         } catch {
           setFormData(prev => ({ ...initialFormData, ...prev }));
@@ -208,6 +211,8 @@ export default function ResearchPage() {
         buyer_persona: Array.isArray(formData.buyer_persona) ? formData.buyer_persona.join(", ") : "",
         cloud_support: Array.isArray(formData.cloud_support) ? formData.cloud_support.join(", ") : "",
         target_customer_size: Array.isArray(formData.target_customer_size) ? formData.target_customer_size.join(", ") : "",
+        target_locations: Array.isArray(formData.target_locations) ? formData.target_locations.join(", ") : "",
+        implementation_details: formData.implementation_details,
         company_name: company.company_name,
         company_key: company.company_key,
         created_by: session?.user.id,
@@ -310,7 +315,7 @@ export default function ResearchPage() {
             <div style={{ display: 'grid', gap: '2.5rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  What kind of product do they have or focused on?
+                  1. What kind of product do they have or focus on?
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                   {(() => {
@@ -324,7 +329,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  Most used keywords on "{company?.company_name || 'the'}" website
+                  2. Most used keywords on "{company?.company_name || 'the'}" website
                   <div 
                     style={{ 
                       marginLeft: '8px', 
@@ -396,7 +401,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  Buyer Persona (who is website info aimed at?)
+                  3. Buyer Persona (who is website info aimed at?)
                   <div 
                     style={{ 
                       marginLeft: '8px', 
@@ -458,7 +463,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  Give hashtags for finding out which cloud support does the company have.
+                  4. Give hashtags to identify which cloud support the company uses.
                   <div 
                     style={{ 
                       marginLeft: '8px', 
@@ -530,7 +535,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  Target customer size
+                  5. Target customer size
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
                   {["SME", "Mid-market", "Enterprise", "NA"].map(opt => (
@@ -541,6 +546,33 @@ export default function ResearchPage() {
                     }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.target_customer_size) && formData.target_customer_size.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.target_customer_size) && formData.target_customer_size.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
                   ))}
                 </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  6. Primary target geographies for "{company?.company_name || 'the company'}"
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  {["EU", "Asia", "US", "Global", "NA"].map(opt => (
+                    <button key={opt} type="button" onClick={() => {
+                      const current = Array.isArray(formData.target_locations) ? formData.target_locations : [];
+                      const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
+                      handleInputChange('target_locations', next);
+                    }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.target_locations) && formData.target_locations.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.target_locations) && formData.target_locations.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  7. Has "{company?.company_name || 'the company'}" implemented these capabilities in their product in any way? Describe in detail.
+                </label>
+                <textarea
+                  value={formData.implementation_details}
+                  onChange={e => handleInputChange('implementation_details', e.target.value)}
+                  placeholder="Share a detailed explanation..."
+                  style={{ width: '100%', minHeight: '120px', borderRadius: '8px', padding: '1rem', border: '1px solid #e4e4e7' }}
+                />
               </div>
             </div>
           </div>
