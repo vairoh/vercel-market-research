@@ -73,6 +73,7 @@ export default function LoginPage() {
       />
 
       <button
+        className="primaryButton"
         onClick={sendMagicLink}
         disabled={loading}
         style={{

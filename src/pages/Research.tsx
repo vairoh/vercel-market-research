@@ -462,9 +462,9 @@ export default function ResearchPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #f4f4f5' }}>
           <button type="button" onClick={handleBack} disabled={currentStep === "GENERAL"} style={{ padding: '0.75rem 2.5rem', borderRadius: '30px', border: '1px solid #000', cursor: 'pointer', visibility: currentStep === "GENERAL" ? 'hidden' : 'visible' }}>Back</button>
           {currentStep !== "SUBMISSION" ? (
-            <button type="button" onClick={handleNext} style={{ padding: '0.75rem 2.5rem', borderRadius: '30px', backgroundColor: '#000', color: '#fff', cursor: 'pointer' }}>Next</button>
+            <button className="primaryButton" type="button" onClick={handleNext} style={{ padding: '0.75rem 2.5rem', borderRadius: '30px', backgroundColor: '#000', color: '#fff', cursor: 'pointer' }}>Next</button>
           ) : (
-            <button onClick={handleSubmit} disabled={submitting} style={{ padding: '0.75rem 2.5rem', borderRadius: '30px', backgroundColor: '#000', color: '#fff', cursor: 'pointer' }}>{submitting ? "Processing..." : "Submit Research"}</button>
+            <button className="primaryButton" onClick={handleSubmit} disabled={submitting} style={{ padding: '0.75rem 2.5rem', borderRadius: '30px', backgroundColor: '#000', color: '#fff', cursor: 'pointer' }}>{submitting ? "Processing..." : "Submit Research"}</button>
           )}
         </div>
       </div>
