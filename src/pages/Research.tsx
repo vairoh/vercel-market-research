@@ -98,7 +98,7 @@ export default function ResearchPage() {
   const handleInputChange = (field: keyof typeof formData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      const valString = String(value ?? "");
+      const valString = String(value || "");
       const hasValue = Array.isArray(value) ? value.length > 0 : valString.trim().length > 0;
       if (hasValue) {
         setErrors(prev => {
@@ -113,11 +113,11 @@ export default function ResearchPage() {
   const validateStep = (step: Step) => {
     const newErrors: Record<string, string> = {};
     if (step === "GENERAL") {
-      if (!(formData.candidate_name ?? "").trim()) newErrors.candidate_name = "Required";
-      if (!(formData.hq_country ?? "").trim()) newErrors.hq_country = "Required";
-      if (!(formData.company_website ?? "").trim()) newErrors.company_website = "Required";
-      if (!(formData.year_founded ?? "").trim()) newErrors.year_founded = "Required";
-      const estimatedSizeStr = String(formData.estimated_size ?? "");
+      if (!(formData.candidate_name || "").trim()) newErrors.candidate_name = "Required";
+      if (!(formData.hq_country || "").trim()) newErrors.hq_country = "Required";
+      if (!(formData.company_website || "").trim()) newErrors.company_website = "Required";
+      if (!(formData.year_founded || "").trim()) newErrors.year_founded = "Required";
+      const estimatedSizeStr = String(formData.estimated_size || '');
       if (!estimatedSizeStr.trim()) newErrors.estimated_size = "Required";
     }
     setErrors(newErrors);
