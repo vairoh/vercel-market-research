@@ -51,6 +51,9 @@ export default function ResearchPage() {
   const [showProductFocusTooltip, setShowProductFocusTooltip] = useState(false);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [shakeValidation, setShakeValidation] = useState(false);
+  const [reservationValid, setReservationValid] = useState(false);
+  const [reservationError, setReservationError] = useState<string | null>(null);
+  const [submissionComplete, setSubmissionComplete] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
   const [cloudSupportInput, setCloudSupportInput] = useState("");
   const [customerNameInput, setCustomerNameInput] = useState("");
@@ -81,6 +84,19 @@ export default function ResearchPage() {
         return;
       }
 
+      const isOwner = data.reserved_by && data.reserved_by === session.user.id;
+      const isReserved = data.reservation_status === "reserved";
+      const expiresAt = data.reservation_expires_at ? new Date(data.reservation_expires_at).getTime() : 0;
+      const notExpired = expiresAt > Date.now();
+
+      if (!isOwner || !isReserved || !notExpired) {
+        setReservationError("Your reservation is not active or no longer belongs to you. Please reserve this company again.");
+        setReservationValid(false);
+        setLoading(false);
+        return;
+      }
+
+      setReservationValid(true);
       setCompany(data);
       
       const saved = localStorage.getItem(`research_progress_${companyKey}`);
@@ -125,6 +141,24 @@ export default function ResearchPage() {
       localStorage.setItem(`research_progress_${companyKey}`, JSON.stringify(formData));
     }
   }, [formData, loading, companyKey]);
+
+  useEffect(() => {
+    if (!reservationValid || !company?.company_key) return;
+
+    const ping = async () => {
+      const { error } = await supabase.rpc("keep_alive_company", {
+        p_company_key: company.company_key,
+      });
+
+      if (error) {
+        console.error("keep_alive_company error:", error);
+      }
+    };
+
+    void ping();
+    const interval = window.setInterval(ping, 60_000);
+    return () => window.clearInterval(interval);
+  }, [reservationValid, company?.company_key]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -182,6 +216,7 @@ export default function ResearchPage() {
   };
 
   const handleNext = () => {
+    if (submissionComplete) return;
     if (!validateStep(currentStep)) {
       setShowValidationErrors(true);
       setShakeValidation(true);
@@ -194,6 +229,7 @@ export default function ResearchPage() {
   };
 
   const handleBack = () => {
+    if (submissionComplete) return;
     if (currentStep === "ANALYSIS") setCurrentStep("GENERAL");
     else if (currentStep === "SUBMISSION") setCurrentStep("ANALYSIS");
   };
@@ -253,6 +289,10 @@ export default function ResearchPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!reservationValid || !company?.company_key) {
+      setReservationError("Your reservation is not active. Please return to Reserve and claim the company again.");
+      return;
+    }
     if (!validateStep("SUBMISSION")) {
       setShowValidationErrors(true);
       setShakeValidation(true);
@@ -263,6 +303,19 @@ export default function ResearchPage() {
     
     setSubmitting(true);
     const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      alert("Session expired. Please sign in again.");
+      setSubmitting(false);
+      navigate("/login");
+      return;
+    }
+
+    const { error: keepAliveError } = await supabase.rpc("keep_alive_company", {
+      p_company_key: company.company_key,
+    });
+    if (keepAliveError) {
+      console.error("keep_alive_company error:", keepAliveError);
+    }
 
     const { error } = await supabase
       .from("research_submissions")
@@ -302,11 +355,24 @@ export default function ResearchPage() {
       setSubmitting(false);
     } else {
       localStorage.removeItem(`research_progress_${companyKey}`);
-      navigate("/reserve");
+      setSubmitting(false);
+      setSubmissionComplete(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   if (loading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'JetBrains Mono' }}>INITIALIZING...</div>;
+  if (reservationError) {
+    return (
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 20px' }}>
+        <div className="card" style={{ padding: '2.5rem', borderRadius: '16px' }}>
+          <h2 style={{ marginTop: 0, marginBottom: '1rem' }}>Reservation Required</h2>
+          <p style={{ marginTop: 0, marginBottom: '2rem', color: '#71717a' }}>{reservationError}</p>
+          <button className={buttonStyles.primary} onClick={() => navigate("/reserve")}>Go to Reserve</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px' }}>
@@ -321,6 +387,26 @@ export default function ResearchPage() {
       </header>
 
       <div className="card" style={{ borderRadius: '16px' }}>
+        {submissionComplete && (
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(255,255,255,0.94)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px'
+          }}>
+            <div className="card" style={{ maxWidth: '520px', width: '100%', padding: '2.5rem', borderRadius: '16px', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#71717a', marginBottom: '0.75rem' }}>Submission Complete</div>
+              <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Research saved successfully.</h3>
+              <p style={{ marginTop: '0.75rem', marginBottom: 0, color: '#71717a', fontSize: '0.85rem' }}>
+                You can close this tab or keep it open for your records.
+              </p>
+            </div>
+          </div>
+        )}
         {currentStep === "GENERAL" && (
           <div className="animate-fade-in">
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>General Profile</h3>
