@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 import styles from "./Research.module.css";
-import { logError, logInfo, logWarn } from "../observability/logger";
-import { fetchCompanyByKey, fetchSession, submitResearch } from "../services/researchService";
-import type { ResearchForm, Step } from "../domain/research";
-import { validateStep } from "../validation/research";
+
+type Step = "GENERAL" | "ANALYSIS" | "SUBMISSION";
 
 export default function ResearchPage() {
   const [searchParams] = useSearchParams();
@@ -20,8 +19,8 @@ export default function ResearchPage() {
   const [keywordInput, setKeywordInput] = useState("");
   const [showValidationErrors, setShowValidationErrors] = useState(false);
 
-  const [formData, setFormData] = useState<ResearchForm>({
-    buyer_persona: [],
+  const [formData, setFormData] = useState({
+    buyer_persona: [] as string[],
     candidate_name: "",
     candidate_email: "",
     company_website: "",
@@ -31,32 +30,36 @@ export default function ResearchPage() {
     funding_stage: "",
     product_name: "",
     product_category: "",
-    finops: [],
+    finops: [] as string[],
     evidence_links: "",
     notes: "",
-    keywords: []
+    keywords: [] as string[]
   });
 
   useEffect(() => {
     const init = async () => {
-      logInfo("research.init.start", { companyKey });
-      const session = await fetchSession();
+      console.log("[ResearchPage] init started", { companyKey });
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        logWarn("research.init.noSession");
+        console.log("[ResearchPage] no session, redirecting to login");
         navigate("/login");
         return;
       }
 
       if (!companyKey) {
-        logWarn("research.init.noCompanyKey");
+        console.log("[ResearchPage] no companyKey, redirecting to reserve");
         navigate("/reserve");
         return;
       }
 
-      const { data, error } = await fetchCompanyByKey(companyKey);
+      const { data, error } = await supabase
+        .from("company_registry")
+        .select("*")
+        .eq("company_key", companyKey)
+        .single();
 
       if (error || !data) {
-        logError("research.init.companyFetchError", { error });
+        console.error("[ResearchPage] fetch company error", error);
         navigate("/reserve");
         return;
       }
@@ -64,9 +67,11 @@ export default function ResearchPage() {
       setCompany(data);
       
       const saved = localStorage.getItem(`research_progress_${companyKey}`);
+      console.log("[ResearchPage] loading saved progress", { saved });
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
+          console.log("[ResearchPage] parsed progress", parsed);
           if (parsed) {
             setFormData(prev => ({
               ...prev,
@@ -77,7 +82,7 @@ export default function ResearchPage() {
             }));
           }
         } catch (e) {
-          logError("research.init.progressParseError", { error: e });
+          console.error("[ResearchPage] Failed to parse progress", e);
         }
       } else {
         setFormData(prev => ({
@@ -92,6 +97,7 @@ export default function ResearchPage() {
 
   useEffect(() => {
     if (!loading && companyKey) {
+      console.log("[ResearchPage] auto-saving progress", formData);
       localStorage.setItem(`research_progress_${companyKey}`, JSON.stringify(formData));
     }
   }, [formData, loading, companyKey]);
@@ -112,20 +118,42 @@ export default function ResearchPage() {
     }
   };
 
-  const runValidation = (step: Step) => {
-    const nextErrors = validateStep(step, formData);
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+  const validateStep = (step: Step) => {
+    console.log("[ResearchPage] validateStep", { step, formData });
+    const newErrors: Record<string, string> = {};
+    if (step === "GENERAL") {
+      try {
+        const candidate_name = formData.candidate_name ?? "";
+        const hq_country = formData.hq_country ?? "";
+        const company_website = formData.company_website ?? "";
+        const year_founded = formData.year_founded ?? "";
+        const estimatedSizeStr = String(formData.estimated_size ?? "");
+
+        console.log("[ResearchPage] checking fields", { candidate_name, hq_country, company_website, year_founded, estimatedSizeStr });
+
+        if (!candidate_name.trim()) newErrors.candidate_name = "Required";
+        if (!hq_country.trim()) newErrors.hq_country = "Required";
+        if (!company_website.trim()) newErrors.company_website = "Required";
+        if (!year_founded.trim()) newErrors.year_founded = "Required";
+        if (!estimatedSizeStr.trim()) newErrors.estimated_size = "Required";
+      } catch (err) {
+        console.error("[ResearchPage] Error in validateStep GENERAL", err);
+      }
+    }
+    console.log("[ResearchPage] validation results", { newErrors });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleNext = () => {
-    const isValid = runValidation(currentStep);
+    console.log("[ResearchPage] handleNext clicked", { currentStep });
+    const isValid = validateStep(currentStep);
     if (!isValid) {
-      logWarn("research.validation.failed", { step: currentStep });
+      console.log("[ResearchPage] validation failed");
       setShowValidationErrors(true);
       return;
     }
-    logInfo("research.validation.passed", { step: currentStep });
+    console.log("[ResearchPage] validation succeeded, advancing step");
     setShowValidationErrors(false);
     if (currentStep === "GENERAL") setCurrentStep("ANALYSIS");
     else if (currentStep === "ANALYSIS") setCurrentStep("SUBMISSION");
@@ -162,42 +190,43 @@ export default function ResearchPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!runValidation("SUBMISSION")) return;
+    console.log("[ResearchPage] handleSubmit clicked");
+    if (!validateStep("SUBMISSION")) return;
     
     setSubmitting(true);
-    const session = await fetchSession();
-    const payload = {
-      candidate_name: formData.candidate_name,
-      candidate_email: formData.candidate_email,
-      company_website: formData.company_website,
-      hq_country: formData.hq_country,
-      year_founded: formData.year_founded,
-      estimated_size: formData.estimated_size,
-      funding_stage: formData.funding_stage,
-      product_name: formData.product_name,
-      product_category: formData.product_category,
-      finops: Array.isArray(formData.finops) ? formData.finops.join(", ") : "",
-      buyer_persona: Array.isArray(formData.buyer_persona) ? formData.buyer_persona.join(", ") : "",
-      company_name: company.company_name,
-      company_key: company.company_key,
-      created_by: session?.user.id,
-      evidence_links: formData.evidence_links,
-      notes: formData.notes,
-      keywords: formData.keywords.join(", ")
-    };
+    const { data: { session } } = await supabase.auth.getSession();
 
-    const { error } = await submitResearch(payload);
+    const { error } = await supabase
+      .from("research_submissions")
+      .insert([{
+        candidate_name: formData.candidate_name,
+        candidate_email: formData.candidate_email,
+        company_website: formData.company_website,
+        hq_country: formData.hq_country,
+        year_founded: formData.year_founded,
+        estimated_size: formData.estimated_size,
+        funding_stage: formData.funding_stage,
+        product_name: formData.product_name,
+        product_category: formData.product_category,
+        finops: Array.isArray(formData.finops) ? formData.finops.join(", ") : "",
+        buyer_persona: Array.isArray(formData.buyer_persona) ? formData.buyer_persona.join(", ") : "",
+        company_name: company.company_name,
+        company_key: company.company_key,
+        created_by: session?.user.id,
+        evidence_links: formData.evidence_links,
+        notes: formData.notes,
+        keywords: formData.keywords.join(", ")
+      }]);
 
     if (error) {
-      logError("research.submit.error", { error });
+      console.error("[ResearchPage] submission error", error);
       alert("Error saving: " + error.message);
       setSubmitting(false);
-      return;
+    } else {
+      console.log("[ResearchPage] submission successful");
+      localStorage.removeItem(`research_progress_${companyKey}`);
+      navigate("/reserve");
     }
-
-    logInfo("research.submit.success", { companyKey });
-    localStorage.removeItem(`research_progress_${companyKey}`);
-    navigate("/reserve");
   };
 
   if (loading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'JetBrains Mono' }}>INITIALIZING...</div>;
