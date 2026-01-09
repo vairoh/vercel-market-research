@@ -18,6 +18,7 @@ const initialFormData = {
   pilot_offers: [] as string[],
   automation_level: [] as string[],
   action_responsibility: [] as string[],
+  conclusion_summary: "",
   candidate_name: "",
   candidate_email: "",
   company_website: "",
@@ -45,6 +46,7 @@ export default function ResearchPage() {
   const [showKeywordTooltip, setShowKeywordTooltip] = useState(false);
   const [showPersonaTooltip, setShowPersonaTooltip] = useState(false);
   const [showCloudSupportTooltip, setShowCloudSupportTooltip] = useState(false);
+  const [showConclusionTooltip, setShowConclusionTooltip] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
   const [cloudSupportInput, setCloudSupportInput] = useState("");
   const [customerNameInput, setCustomerNameInput] = useState("");
@@ -97,7 +99,8 @@ export default function ResearchPage() {
             pricing_models: Array.isArray(safeParsed.pricing_models) ? safeParsed.pricing_models : [],
             pilot_offers: Array.isArray(safeParsed.pilot_offers) ? safeParsed.pilot_offers : [],
             automation_level: Array.isArray(safeParsed.automation_level) ? safeParsed.automation_level : [],
-            action_responsibility: Array.isArray(safeParsed.action_responsibility) ? safeParsed.action_responsibility : []
+            action_responsibility: Array.isArray(safeParsed.action_responsibility) ? safeParsed.action_responsibility : [],
+            conclusion_summary: typeof safeParsed.conclusion_summary === "string" ? safeParsed.conclusion_summary : ""
           }));
         } catch {
           setFormData(prev => ({ ...initialFormData, ...prev }));
@@ -247,6 +250,7 @@ export default function ResearchPage() {
         pilot_offers: Array.isArray(formData.pilot_offers) ? formData.pilot_offers.join(", ") : "",
         automation_level: Array.isArray(formData.automation_level) ? formData.automation_level.join(", ") : "",
         action_responsibility: Array.isArray(formData.action_responsibility) ? formData.action_responsibility.join(", ") : "",
+        conclusion_summary: formData.conclusion_summary,
         company_name: company.company_name,
         company_key: company.company_key,
         created_by: session?.user.id,
@@ -730,17 +734,61 @@ export default function ResearchPage() {
 
         {currentStep === "SUBMISSION" && (
           <div className="animate-fade-in">
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>Final Details</h3>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>Conclusion</h3>
             <div style={{ display: 'grid', gap: '2rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Product Name</label>
-                  <input value={formData.product_name} onChange={e => handleInputChange('product_name', e.target.value)} style={{ width: '100%', borderRadius: '8px', padding: '0.75rem', border: '1px solid #e4e4e7' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Product Category</label>
-                  <input value={formData.product_category} onChange={e => handleInputChange('product_category', e.target.value)} style={{ width: '100%', borderRadius: '8px', padding: '0.75rem', border: '1px solid #e4e4e7' }} />
-                </div>
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  Based on your analysis, describe the competitor’s key strengths and key limitations as a product or platform.
+                  <div 
+                    style={{ 
+                      marginLeft: '8px', 
+                      width: '18px', 
+                      height: '18px', 
+                      borderRadius: '50%', 
+                      border: '1px solid #71717a', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontSize: '0.7rem', 
+                      color: '#71717a', 
+                      cursor: 'pointer',
+                      position: 'relative'
+                    }}
+                    onMouseEnter={() => setShowConclusionTooltip(true)}
+                    onMouseLeave={() => setShowConclusionTooltip(false)}
+                    onClick={() => setShowConclusionTooltip(!showConclusionTooltip)}
+                  >
+                    ?
+                    {showConclusionTooltip && (
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '25px',
+                        left: '0',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #000000',
+                        padding: '12px',
+                        borderRadius: '8px',
+                        zIndex: 100,
+                        width: 'max-content',
+                        maxWidth: '450px',
+                        boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+                        fontSize: '0.75rem',
+                        color: '#000000',
+                        fontStyle: 'normal',
+                        lineHeight: '1.4',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        Focus on capabilities, automation level, pricing model, compliance posture, execution complexity, and customer experience.
+                      </div>
+                    )}
+                  </div>
+                </label>
+                <textarea
+                  value={formData.conclusion_summary}
+                  onChange={e => handleInputChange('conclusion_summary', e.target.value)}
+                  placeholder="Write a concise, evidence-based summary..."
+                  style={{ width: '100%', minHeight: '140px', borderRadius: '8px', padding: '1rem', border: '1px solid #e4e4e7' }}
+                />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Evidence Links</label>
