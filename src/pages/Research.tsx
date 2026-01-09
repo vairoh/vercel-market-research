@@ -408,7 +408,7 @@ export default function ResearchPage() {
             <div style={{ display: 'grid', gap: '2.5rem' }}>
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  1. What is the company’s primary product focus or positioning (as publicly stated)
+                  1. What is the company’s primary product focus or positioning (as publicly stated) *
                   <div 
                     style={{ 
                       marginLeft: '8px', 
@@ -471,7 +471,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  2. Most used keywords on "{company?.company_name || 'the'}" website
+                  2. Most used keywords on "{company?.company_name || 'the'}" website *
                   <div 
                     style={{ 
                       marginLeft: '8px', 
@@ -546,7 +546,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  3. Buyer Persona (who is website info aimed at?)
+                  3. Buyer Persona (who is website info aimed at?) *
                   <div 
                     style={{ 
                       marginLeft: '8px', 
@@ -611,7 +611,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  4. Does the company officially support, integrate with, or maintain partnerships with any cloud platforms or hyperscalers?
+                  4. Which cloud platforms or hyperscalers does the company officially support, integrate with, or partner with? *
                   <div 
                     style={{ 
                       marginLeft: '8px', 
@@ -688,7 +688,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  5. Target customer size
+                  5. Target customer size *
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
                   {["SME", "Mid-market", "Enterprise", "NA"].map(opt => (
@@ -703,7 +703,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  6. Primary target geographies for "{company?.company_name || 'the company'}"
+                  6. Primary target geographies for "{company?.company_name || 'the company'}" *
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
                   {["EU", "Asia", "US", "Global"].map(opt => (
@@ -718,7 +718,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  7. Does "{company?.company_name || 'the company'}" mention or claim AI capabilities in their product? Describe in detail.
+                  7. Does "{company?.company_name || 'the company'}" mention or claim AI capabilities in their product? Describe in detail. *
                 </label>
                 <textarea
                   value={formData.implementation_details}
@@ -730,7 +730,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  8. Are any customer names publicly disclosed on the company’s website or LinkedIn page?
+                  8. Are any customer names publicly disclosed on the company’s website or LinkedIn page? *
                 </label>
                 <div className={styles.keywordWrap}>
                   <input 
@@ -759,7 +759,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  9. Does the company publicly reference any compliance or security certifications?
+                  9. Does the company publicly reference any compliance or security certifications? *
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
                   {["C5 (BSI)", "ISO (e.g., ISO/IEC 27001)", "SOC (SOC 1 / SOC 2)", "None"].map(opt => (
@@ -774,7 +774,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  10. What pricing model(s) does the company offer (as publicly disclosed)?
+                  10. What pricing model(s) does the company offer (as publicly disclosed)? *
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
                   {["Flat subscription", "Usage-based pricing", "Performance-based pricing", "Enterprise / custom pricing", "Not publicly disclosed"].map(opt => (
@@ -789,7 +789,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  11. Does the company offer a pilot, trial, or free tier? If yes, please specify.
+                  11. Does the company offer a pilot, trial, or free tier? If yes, please specify. *
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
                   {["Free trial (limited)", "Free tier (limited)", "None stated"].map(opt => (
@@ -804,7 +804,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  12. What is the highest level of automation the product provides (as publicly disclosed)?
+                  12. What is the highest level of automation the product provides (as publicly disclosed)? *
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
                   {[
@@ -825,7 +825,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  13. Who is responsible for executing actions once insights or decisions are generated?
+                  13. Who is responsible for executing actions once insights or decisions are generated? *
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
                   {[
@@ -870,7 +870,7 @@ export default function ResearchPage() {
             <div style={{ display: 'grid', gap: '2rem' }}>
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  1. Based on your analysis, describe the competitor’s key strengths and key limitations as a product or platform.
+                  1. Based on your analysis, describe the competitor’s key strengths and key limitations as a product or platform. *
                   <div 
                     style={{ 
                       marginLeft: '8px', 
@@ -929,7 +929,7 @@ export default function ResearchPage() {
               </div>
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  2. Evidence Links
+                  2. Evidence Links *
                   <div 
                     style={{ 
                       marginLeft: '8px', 
