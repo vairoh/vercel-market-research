@@ -16,6 +16,8 @@ const initialFormData = {
   compliance_certifications: [] as string[],
   pricing_models: [] as string[],
   pilot_offers: [] as string[],
+  automation_level: [] as string[],
+  action_responsibility: [] as string[],
   candidate_name: "",
   candidate_email: "",
   company_website: "",
@@ -93,7 +95,9 @@ export default function ResearchPage() {
             customer_names: Array.isArray(safeParsed.customer_names) ? safeParsed.customer_names : [],
             compliance_certifications: Array.isArray(safeParsed.compliance_certifications) ? safeParsed.compliance_certifications : [],
             pricing_models: Array.isArray(safeParsed.pricing_models) ? safeParsed.pricing_models : [],
-            pilot_offers: Array.isArray(safeParsed.pilot_offers) ? safeParsed.pilot_offers : []
+            pilot_offers: Array.isArray(safeParsed.pilot_offers) ? safeParsed.pilot_offers : [],
+            automation_level: Array.isArray(safeParsed.automation_level) ? safeParsed.automation_level : [],
+            action_responsibility: Array.isArray(safeParsed.action_responsibility) ? safeParsed.action_responsibility : []
           }));
         } catch {
           setFormData(prev => ({ ...initialFormData, ...prev }));
@@ -241,6 +245,8 @@ export default function ResearchPage() {
         compliance_certifications: Array.isArray(formData.compliance_certifications) ? formData.compliance_certifications.join(", ") : "",
         pricing_models: Array.isArray(formData.pricing_models) ? formData.pricing_models.join(", ") : "",
         pilot_offers: Array.isArray(formData.pilot_offers) ? formData.pilot_offers.join(", ") : "",
+        automation_level: Array.isArray(formData.automation_level) ? formData.automation_level.join(", ") : "",
+        action_responsibility: Array.isArray(formData.action_responsibility) ? formData.action_responsibility.join(", ") : "",
         company_name: company.company_name,
         company_key: company.company_key,
         created_by: session?.user.id,
@@ -673,6 +679,48 @@ export default function ResearchPage() {
                       const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
                       handleInputChange('pilot_offers', next);
                     }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.pilot_offers) && formData.pilot_offers.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.pilot_offers) && formData.pilot_offers.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  12. What is the highest level of automation the product provides (as publicly disclosed)?
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  {[
+                    "None (manual analysis only)",
+                    "Alerts only",
+                    "Recommendations (human-in-the-loop)",
+                    "Automated actions (policy- or rule-based)",
+                    "Real-time orchestration (continuous, cross-system)"
+                  ].map(opt => (
+                    <button key={opt} type="button" onClick={() => {
+                      const current = Array.isArray(formData.automation_level) ? formData.automation_level : [];
+                      const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
+                      handleInputChange('automation_level', next);
+                    }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.automation_level) && formData.automation_level.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.automation_level) && formData.automation_level.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  13. Who is responsible for executing actions once insights or decisions are generated?
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  {[
+                    "Customer (manual execution)",
+                    "Customer via scripts / tooling",
+                    "Platform executes actions automatically",
+                    "Vendor consultants / managed service",
+                    "Not clearly disclosed"
+                  ].map(opt => (
+                    <button key={opt} type="button" onClick={() => {
+                      const current = Array.isArray(formData.action_responsibility) ? formData.action_responsibility : [];
+                      const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
+                      handleInputChange('action_responsibility', next);
+                    }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.action_responsibility) && formData.action_responsibility.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.action_responsibility) && formData.action_responsibility.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
                   ))}
                 </div>
               </div>
