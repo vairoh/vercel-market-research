@@ -8,6 +8,8 @@ type Step = "GENERAL" | "ANALYSIS" | "SUBMISSION";
 
 const initialFormData = {
   buyer_persona: [] as string[],
+  cloud_support: [] as string[],
+  target_customer_size: [] as string[],
   candidate_name: "",
   candidate_email: "",
   company_website: "",
@@ -34,7 +36,9 @@ export default function ResearchPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showKeywordTooltip, setShowKeywordTooltip] = useState(false);
   const [showPersonaTooltip, setShowPersonaTooltip] = useState(false);
+  const [showCloudSupportTooltip, setShowCloudSupportTooltip] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
+  const [cloudSupportInput, setCloudSupportInput] = useState("");
 
   const [formData, setFormData] = useState({ ...initialFormData });
 
@@ -75,7 +79,9 @@ export default function ResearchPage() {
             ...safeParsed,
             finops: Array.isArray(safeParsed.finops) ? safeParsed.finops : [],
             buyer_persona: Array.isArray(safeParsed.buyer_persona) ? safeParsed.buyer_persona : [],
-            keywords: Array.isArray(safeParsed.keywords) ? safeParsed.keywords : []
+            keywords: Array.isArray(safeParsed.keywords) ? safeParsed.keywords : [],
+            cloud_support: Array.isArray(safeParsed.cloud_support) ? safeParsed.cloud_support : [],
+            target_customer_size: Array.isArray(safeParsed.target_customer_size) ? safeParsed.target_customer_size : []
           }));
         } catch {
           setFormData(prev => ({ ...initialFormData, ...prev }));
@@ -164,6 +170,21 @@ export default function ResearchPage() {
     handleInputChange('keywords', formData.keywords.filter((_, i) => i !== idx));
   };
 
+  const handleAddCloudSupport = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const val = cloudSupportInput.trim().replace(/^#/, '');
+      if (val && !formData.cloud_support.includes(val)) {
+        handleInputChange('cloud_support', [...formData.cloud_support, val]);
+      }
+      setCloudSupportInput("");
+    }
+  };
+
+  const removeCloudSupport = (idx: number) => {
+    handleInputChange('cloud_support', formData.cloud_support.filter((_, i) => i !== idx));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep("SUBMISSION")) return;
@@ -185,6 +206,8 @@ export default function ResearchPage() {
         product_category: formData.product_category,
         finops: Array.isArray(formData.finops) ? formData.finops.join(", ") : "",
         buyer_persona: Array.isArray(formData.buyer_persona) ? formData.buyer_persona.join(", ") : "",
+        cloud_support: Array.isArray(formData.cloud_support) ? formData.cloud_support.join(", ") : "",
+        target_customer_size: Array.isArray(formData.target_customer_size) ? formData.target_customer_size.join(", ") : "",
         company_name: company.company_name,
         company_key: company.company_key,
         created_by: session?.user.id,
@@ -413,7 +436,7 @@ export default function ResearchPage() {
                         lineHeight: '1.4',
                         whiteSpace: 'nowrap'
                       }}>
-                        <strong>Examples:</strong><br />
+                        Examples:<br />
                         • “Reduce cloud spend by 30%” → CFO / FinOps<br />
                         • “Ensure compliance with EU regulations” → CISO / Legal<br />
                         • “Automate infrastructure at scale” → CTO / Platform teams<br />
@@ -429,6 +452,93 @@ export default function ResearchPage() {
                       const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
                       handleInputChange('buyer_persona', next);
                     }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.buyer_persona) && formData.buyer_persona.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.buyer_persona) && formData.buyer_persona.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  Give hashtags for finding out which cloud support does the company have.
+                  <div 
+                    style={{ 
+                      marginLeft: '8px', 
+                      width: '18px', 
+                      height: '18px', 
+                      borderRadius: '50%', 
+                      border: '1px solid #71717a', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontSize: '0.7rem', 
+                      color: '#71717a', 
+                      cursor: 'pointer',
+                      position: 'relative'
+                    }}
+                    onMouseEnter={() => setShowCloudSupportTooltip(true)}
+                    onMouseLeave={() => setShowCloudSupportTooltip(false)}
+                    onClick={() => setShowCloudSupportTooltip(!showCloudSupportTooltip)}
+                  >
+                    ?
+                    {showCloudSupportTooltip && (
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '25px',
+                        left: '0',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #000000',
+                        padding: '12px',
+                        borderRadius: '8px',
+                        zIndex: 100,
+                        width: 'max-content',
+                        maxWidth: '450px',
+                        boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+                        fontSize: '0.75rem',
+                        color: '#000000',
+                        fontStyle: 'normal',
+                        lineHeight: '1.4',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        (e.g. Amazon, Azure, GCP, STACKIT, OVH, Hetzner, Open Telekom Cloud, etc.)
+                      </div>
+                    )}
+                  </div>
+                </label>
+                <div className={styles.keywordWrap}>
+                  <input 
+                    value={cloudSupportInput}
+                    onChange={e => setCloudSupportInput(e.target.value)}
+                    onKeyDown={handleAddCloudSupport}
+                    placeholder="Type provider + Enter..."
+                    className={styles.keywordInput}
+                  />
+                  {formData.cloud_support.length > 0 && (
+                    <div className={styles.chipGroup}>
+                      {formData.cloud_support.map((kw, idx) => (
+                        <span key={idx} className={styles.chip}>
+                          #{kw}
+                          <button 
+                            type="button" 
+                            onClick={() => removeCloudSupport(idx)} 
+                            className={styles.chipRemove}
+                          >×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  Target customer size
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  {["SME", "Mid-market", "Enterprise", "NA"].map(opt => (
+                    <button key={opt} type="button" onClick={() => {
+                      const current = Array.isArray(formData.target_customer_size) ? formData.target_customer_size : [];
+                      const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
+                      handleInputChange('target_customer_size', next);
+                    }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.target_customer_size) && formData.target_customer_size.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.target_customer_size) && formData.target_customer_size.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
                   ))}
                 </div>
               </div>
