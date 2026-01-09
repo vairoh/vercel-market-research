@@ -4,6 +4,7 @@ import styles from "./ResearchKeywords.module.css";
 import { logError, logInfo, logWarn } from "../observability/logger";
 import { fetchCompanyByKey, fetchSession, submitResearch } from "../services/researchService";
 import type { ResearchForm, Step } from "../domain/research";
+import { ensureResearchForm, INITIAL_RESEARCH_FORM } from "../domain/research";
 import { validateStep } from "../validation/research";
 
 export default function ResearchPage() {
@@ -20,22 +21,7 @@ export default function ResearchPage() {
   const [keywordInput, setKeywordInput] = useState("");
   const [showValidationErrors, setShowValidationErrors] = useState(false);
 
-  const [formData, setFormData] = useState<ResearchForm>({
-    buyer_persona: [],
-    candidate_name: "",
-    candidate_email: "",
-    company_website: "",
-    hq_country: "",
-    year_founded: "",
-    estimated_size: "",
-    funding_stage: "",
-    product_name: "",
-    product_category: "",
-    finops: [],
-    evidence_links: "",
-    notes: "",
-    keywords: []
-  });
+  const [formData, setFormData] = useState<ResearchForm>(INITIAL_RESEARCH_FORM);
 
   useEffect(() => {
     const init = async () => {
@@ -68,13 +54,7 @@ export default function ResearchPage() {
         try {
           const parsed = JSON.parse(saved);
           if (parsed) {
-            setFormData(prev => ({
-              ...prev,
-              ...parsed,
-              finops: Array.isArray(parsed.finops) ? parsed.finops : [],
-              buyer_persona: Array.isArray(parsed.buyer_persona) ? parsed.buyer_persona : [],
-              keywords: Array.isArray(parsed.keywords) ? parsed.keywords : []
-            }));
+            setFormData(prev => ensureResearchForm({ ...prev, ...parsed }));
           }
         } catch (e) {
           logError("research.init.progressParseError", { error: e });
@@ -113,7 +93,8 @@ export default function ResearchPage() {
   };
 
   const runValidation = (step: Step) => {
-    const nextErrors = validateStep(step, formData);
+    const safeForm = ensureResearchForm(formData);
+    const nextErrors = validateStep(step, safeForm);
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
