@@ -47,6 +47,7 @@ export default function ResearchPage() {
   const [showPersonaTooltip, setShowPersonaTooltip] = useState(false);
   const [showCloudSupportTooltip, setShowCloudSupportTooltip] = useState(false);
   const [showConclusionTooltip, setShowConclusionTooltip] = useState(false);
+  const [showEvidenceTooltip, setShowEvidenceTooltip] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
   const [cloudSupportInput, setCloudSupportInput] = useState("");
   const [customerNameInput, setCustomerNameInput] = useState("");
@@ -738,7 +739,7 @@ export default function ResearchPage() {
             <div style={{ display: 'grid', gap: '2rem' }}>
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  Based on your analysis, describe the competitor’s key strengths and key limitations as a product or platform.
+                  1. Based on your analysis, describe the competitor’s key strengths and key limitations as a product or platform.
                   <div 
                     style={{ 
                       marginLeft: '8px', 
@@ -791,11 +792,58 @@ export default function ResearchPage() {
                 />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Evidence Links</label>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  2. Evidence Links
+                  <div 
+                    style={{ 
+                      marginLeft: '8px', 
+                      width: '18px', 
+                      height: '18px', 
+                      borderRadius: '50%', 
+                      border: '1px solid #71717a', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontSize: '0.7rem', 
+                      color: '#71717a', 
+                      cursor: 'pointer',
+                      position: 'relative'
+                    }}
+                    onMouseEnter={() => setShowEvidenceTooltip(true)}
+                    onMouseLeave={() => setShowEvidenceTooltip(false)}
+                    onClick={() => setShowEvidenceTooltip(!showEvidenceTooltip)}
+                  >
+                    ?
+                    {showEvidenceTooltip && (
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '25px',
+                        left: '0',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #000000',
+                        padding: '12px',
+                        borderRadius: '8px',
+                        zIndex: 100,
+                        width: 'max-content',
+                        maxWidth: '450px',
+                        boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+                        fontSize: '0.75rem',
+                        color: '#000000',
+                        fontStyle: 'normal',
+                        lineHeight: '1.4',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        Paste direct URLs that support your findings (e.g., product pages, documentation, pricing pages, blog posts, case studies, or LinkedIn posts).
+                      </div>
+                    )}
+                  </div>
+                </label>
                 <textarea style={{ width: '100%', minHeight: '100px', borderRadius: '8px', padding: '1rem', border: '1px solid #e4e4e7' }} value={formData.evidence_links} onChange={e => handleInputChange('evidence_links', e.target.value)} />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 800, color: '#71717a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Additional Notes</label>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  3. Additional Notes
+                </label>
                 <textarea style={{ width: '100%', minHeight: '100px', borderRadius: '8px', padding: '1rem', border: '1px solid #e4e4e7' }} value={formData.notes} onChange={e => handleInputChange('notes', e.target.value)} />
               </div>
             </div>
