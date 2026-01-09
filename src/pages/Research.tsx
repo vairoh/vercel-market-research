@@ -156,6 +156,25 @@ export default function ResearchPage() {
       const estimatedSizeStr = String(formData.estimated_size || '');
       if (!estimatedSizeStr.trim()) newErrors.estimated_size = "Required";
     }
+    if (step === "ANALYSIS") {
+      if (!Array.isArray(formData.finops) || formData.finops.length === 0) newErrors.finops = "Required";
+      if (!Array.isArray(formData.keywords) || formData.keywords.length === 0) newErrors.keywords = "Required";
+      if (!Array.isArray(formData.buyer_persona) || formData.buyer_persona.length === 0) newErrors.buyer_persona = "Required";
+      if (!Array.isArray(formData.cloud_support) || formData.cloud_support.length === 0) newErrors.cloud_support = "Required";
+      if (!Array.isArray(formData.target_customer_size) || formData.target_customer_size.length === 0) newErrors.target_customer_size = "Required";
+      if (!Array.isArray(formData.target_locations) || formData.target_locations.length === 0) newErrors.target_locations = "Required";
+      if (!String(formData.implementation_details || "").trim()) newErrors.implementation_details = "Required";
+      if (!Array.isArray(formData.customer_names) || formData.customer_names.length === 0) newErrors.customer_names = "Required";
+      if (!Array.isArray(formData.compliance_certifications) || formData.compliance_certifications.length === 0) newErrors.compliance_certifications = "Required";
+      if (!Array.isArray(formData.pricing_models) || formData.pricing_models.length === 0) newErrors.pricing_models = "Required";
+      if (!Array.isArray(formData.pilot_offers) || formData.pilot_offers.length === 0) newErrors.pilot_offers = "Required";
+      if (!Array.isArray(formData.automation_level) || formData.automation_level.length === 0) newErrors.automation_level = "Required";
+      if (!Array.isArray(formData.action_responsibility) || formData.action_responsibility.length === 0) newErrors.action_responsibility = "Required";
+    }
+    if (step === "SUBMISSION") {
+      if (!String(formData.conclusion_summary || "").trim()) newErrors.conclusion_summary = "Required";
+      if (!String(formData.evidence_links || "").trim()) newErrors.evidence_links = "Required";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -356,6 +375,11 @@ export default function ResearchPage() {
         {currentStep === "ANALYSIS" && (
           <div className="animate-fade-in">
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>Product Analysis</h3>
+            {showValidationErrors && Object.keys(errors).length > 0 && (
+              <div style={{ marginBottom: '1.5rem', padding: '0.75rem 1rem', border: '1px solid #ef4444', borderRadius: '8px', fontSize: '0.75rem', color: '#ef4444', fontWeight: 600 }}>
+                Please complete all required fields before continuing.
+              </div>
+            )}
             <div style={{ display: 'grid', gap: '2.5rem' }}>
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
@@ -801,6 +825,11 @@ export default function ResearchPage() {
         {currentStep === "SUBMISSION" && (
           <div className="animate-fade-in">
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>Conclusion</h3>
+            {showValidationErrors && Object.keys(errors).length > 0 && (
+              <div style={{ marginBottom: '1.5rem', padding: '0.75rem 1rem', border: '1px solid #ef4444', borderRadius: '8px', fontSize: '0.75rem', color: '#ef4444', fontWeight: 600 }}>
+                Please complete all required fields before continuing.
+              </div>
+            )}
             <div style={{ display: 'grid', gap: '2rem' }}>
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
