@@ -791,7 +791,8 @@ export default function ResearchPage() {
                         whiteSpace: 'normal',
                         wordBreak: 'break-word'
                       }}>
-                        Focus on capabilities, automation level, pricing model, compliance posture, execution complexity, and customer experience.
+                        Focus on capabilities, automation level, pricing model,<br />
+                        compliance posture, execution complexity, and customer experience.
                       </div>
                     )}
                   </div>
@@ -848,7 +849,9 @@ export default function ResearchPage() {
                         whiteSpace: 'normal',
                         wordBreak: 'break-word'
                       }}>
-                        Paste direct URLs that support your findings (e.g., product pages, documentation, pricing pages, blog posts, case studies, or LinkedIn posts).
+                        Paste direct URLs that support your findings:<br />
+                        product pages, documentation, pricing pages,<br />
+                        blog posts, case studies, or LinkedIn posts.
                       </div>
                     )}
                   </div>
