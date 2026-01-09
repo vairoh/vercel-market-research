@@ -16,6 +16,7 @@ export default function ResearchPage() {
   const [showKeywordTooltip, setShowKeywordTooltip] = useState(false);
   const [showPersonaTooltip, setShowPersonaTooltip] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
   const keywordStyles = {
     wrap: {
       display: "grid",
@@ -134,12 +135,13 @@ export default function ResearchPage() {
       const saved = localStorage.getItem(`research_progress_${companyKey}`);
       if (saved) {
         const parsed = JSON.parse(saved);
-        setFormData({
+        setFormData(prev => ({
+          ...prev,
           ...parsed,
           finops: Array.isArray(parsed.finops) ? parsed.finops : [],
           buyer_persona: Array.isArray(parsed.buyer_persona) ? parsed.buyer_persona : [],
           keywords: Array.isArray(parsed.keywords) ? parsed.keywords : []
-        });
+        }));
       } else {
         setFormData(prev => ({
           ...prev,
@@ -174,10 +176,10 @@ export default function ResearchPage() {
   const validateStep = (step: Step) => {
     const newErrors: Record<string, string> = {};
     if (step === "GENERAL") {
-      if (!formData.candidate_name.trim()) newErrors.candidate_name = "Required";
-      if (!formData.hq_country.trim()) newErrors.hq_country = "Required";
-      if (!formData.company_website.trim()) newErrors.company_website = "Required";
-      if (!formData.year_founded.trim()) newErrors.year_founded = "Required";
+      if (!String(formData.candidate_name || "").trim()) newErrors.candidate_name = "Required";
+      if (!String(formData.hq_country || "").trim()) newErrors.hq_country = "Required";
+      if (!String(formData.company_website || "").trim()) newErrors.company_website = "Required";
+      if (!String(formData.year_founded || "").trim()) newErrors.year_founded = "Required";
       const estimatedSizeStr = String(formData.estimated_size || '');
       if (!estimatedSizeStr.trim()) newErrors.estimated_size = "Required";
     }
@@ -186,10 +188,13 @@ export default function ResearchPage() {
   };
 
   const handleNext = () => {
-    if (validateStep(currentStep)) {
-      if (currentStep === "GENERAL") setCurrentStep("ANALYSIS");
-      else if (currentStep === "ANALYSIS") setCurrentStep("SUBMISSION");
+    if (!validateStep(currentStep)) {
+      setShowValidationErrors(true);
+      return;
     }
+    setShowValidationErrors(false);
+    if (currentStep === "GENERAL") setCurrentStep("ANALYSIS");
+    else if (currentStep === "ANALYSIS") setCurrentStep("SUBMISSION");
   };
 
   const handleBack = () => {
@@ -276,6 +281,11 @@ export default function ResearchPage() {
         {currentStep === "GENERAL" && (
           <div className="animate-fade-in">
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>General Profile</h3>
+            {showValidationErrors && Object.keys(errors).length > 0 && (
+              <div style={{ marginBottom: '1.5rem', padding: '0.75rem 1rem', border: '1px solid #ef4444', borderRadius: '8px', fontSize: '0.75rem', color: '#ef4444', fontWeight: 600 }}>
+                Please complete all required fields before continuing.
+              </div>
+            )}
             <div style={{ display: 'grid', gap: '2.5rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
                 <div>
