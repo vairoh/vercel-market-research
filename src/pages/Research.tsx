@@ -824,14 +824,16 @@ export default function ResearchPage() {
                         padding: '12px',
                         borderRadius: '8px',
                         zIndex: 100,
-                        width: 'max-content',
-                        maxWidth: '450px',
+                        width: 'min(320px, 80vw)',
+                        maxWidth: '80vw',
                         boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
                         fontSize: '0.75rem',
                         color: '#000000',
                         fontStyle: 'normal',
+                        fontWeight: 400,
                         lineHeight: '1.4',
-                        whiteSpace: 'nowrap'
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word'
                       }}>
                         Paste direct URLs that support your findings (e.g., product pages, documentation, pricing pages, blog posts, case studies, or LinkedIn posts).
                       </div>
