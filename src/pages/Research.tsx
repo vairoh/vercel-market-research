@@ -551,7 +551,9 @@ export default function ResearchPage() {
                         whiteSpace: 'normal',
                         wordBreak: 'break-word'
                       }}>
-                        (e.g. Amazon, Azure, GCP, STACKIT, OVH, Hetzner, Open Telekom Cloud, etc.)
+                        (e.g. Amazon, Azure, GCP, STACKIT,<br />
+                        OVH, Hetzner, Open Telekom Cloud,<br />
+                        etc.)
                       </div>
                     )}
                   </div>
@@ -791,8 +793,9 @@ export default function ResearchPage() {
                         whiteSpace: 'normal',
                         wordBreak: 'break-word'
                       }}>
-                        Focus on capabilities, automation level, pricing model,<br />
-                        compliance posture, execution complexity, and customer experience.
+                        Focus on capabilities, automation level,<br />
+                        pricing model, compliance posture,<br />
+                        execution complexity, and customer experience.
                       </div>
                     )}
                   </div>
