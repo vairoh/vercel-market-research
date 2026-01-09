@@ -14,6 +14,8 @@ const initialFormData = {
   implementation_details: "",
   customer_names: [] as string[],
   compliance_certifications: [] as string[],
+  pricing_models: [] as string[],
+  pilot_offers: [] as string[],
   candidate_name: "",
   candidate_email: "",
   company_website: "",
@@ -89,7 +91,9 @@ export default function ResearchPage() {
             target_customer_size: Array.isArray(safeParsed.target_customer_size) ? safeParsed.target_customer_size : [],
             target_locations: Array.isArray(safeParsed.target_locations) ? safeParsed.target_locations : [],
             customer_names: Array.isArray(safeParsed.customer_names) ? safeParsed.customer_names : [],
-            compliance_certifications: Array.isArray(safeParsed.compliance_certifications) ? safeParsed.compliance_certifications : []
+            compliance_certifications: Array.isArray(safeParsed.compliance_certifications) ? safeParsed.compliance_certifications : [],
+            pricing_models: Array.isArray(safeParsed.pricing_models) ? safeParsed.pricing_models : [],
+            pilot_offers: Array.isArray(safeParsed.pilot_offers) ? safeParsed.pilot_offers : []
           }));
         } catch {
           setFormData(prev => ({ ...initialFormData, ...prev }));
@@ -235,6 +239,8 @@ export default function ResearchPage() {
         implementation_details: formData.implementation_details,
         customer_names: Array.isArray(formData.customer_names) ? formData.customer_names.join(", ") : "",
         compliance_certifications: Array.isArray(formData.compliance_certifications) ? formData.compliance_certifications.join(", ") : "",
+        pricing_models: Array.isArray(formData.pricing_models) ? formData.pricing_models.join(", ") : "",
+        pilot_offers: Array.isArray(formData.pilot_offers) ? formData.pilot_offers.join(", ") : "",
         company_name: company.company_name,
         company_key: company.company_key,
         created_by: session?.user.id,
@@ -485,7 +491,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  4. Give hashtags to identify which cloud support the company uses.
+                  4. Does the company officially support, integrate with, or maintain partnerships with any cloud platforms or hyperscalers?
                   <div 
                     style={{ 
                       marginLeft: '8px', 
@@ -637,6 +643,36 @@ export default function ResearchPage() {
                       const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
                       handleInputChange('compliance_certifications', next);
                     }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.compliance_certifications) && formData.compliance_certifications.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.compliance_certifications) && formData.compliance_certifications.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  10. What pricing model(s) does the company offer (as publicly disclosed)?
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  {["Flat subscription", "Usage-based pricing", "Performance-based pricing", "Enterprise / custom pricing", "Not publicly disclosed"].map(opt => (
+                    <button key={opt} type="button" onClick={() => {
+                      const current = Array.isArray(formData.pricing_models) ? formData.pricing_models : [];
+                      const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
+                      handleInputChange('pricing_models', next);
+                    }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.pricing_models) && formData.pricing_models.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.pricing_models) && formData.pricing_models.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  11. Does the company offer a pilot, trial, or free tier? If yes, please specify.
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  {["Free trial (limited)", "Free tier (limited)", "None stated"].map(opt => (
+                    <button key={opt} type="button" onClick={() => {
+                      const current = Array.isArray(formData.pilot_offers) ? formData.pilot_offers : [];
+                      const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
+                      handleInputChange('pilot_offers', next);
+                    }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.pilot_offers) && formData.pilot_offers.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.pilot_offers) && formData.pilot_offers.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
                   ))}
                 </div>
               </div>
