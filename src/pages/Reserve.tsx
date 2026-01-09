@@ -86,13 +86,13 @@ export default function ReservePage() {
     setLoading(true);
     try {
       // 1. First, check if the current user already has an active reservation for this company
-      const { data: existing, error: checkError } = await supabase
+      const { data: existing } = await supabase
         .from("company_registry")
         .select("company_key, reserved_by")
         .eq("company_name_normalized", normalizedName)
         .maybeSingle();
 
-      const { data: legacyExisting, error: legacyError } = await supabase
+      const { data: legacyExisting } = await supabase
         .from("company_registry")
         .select("company_key, reserved_by")
         .eq("company_name", name)
