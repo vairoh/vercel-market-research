@@ -48,6 +48,7 @@ export default function ResearchPage() {
   const [showCloudSupportTooltip, setShowCloudSupportTooltip] = useState(false);
   const [showConclusionTooltip, setShowConclusionTooltip] = useState(false);
   const [showEvidenceTooltip, setShowEvidenceTooltip] = useState(false);
+  const [showProductFocusTooltip, setShowProductFocusTooltip] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
   const [cloudSupportInput, setCloudSupportInput] = useState("");
   const [customerNameInput, setCustomerNameInput] = useState("");
@@ -353,8 +354,57 @@ export default function ResearchPage() {
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '2rem' }}>Product Analysis</h3>
             <div style={{ display: 'grid', gap: '2.5rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  1. What kind of product do they have or focus on?
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  1. What is the company’s primary product focus or positioning (as publicly stated)
+                  <div 
+                    style={{ 
+                      marginLeft: '8px', 
+                      width: '18px', 
+                      height: '18px', 
+                      borderRadius: '50%', 
+                      border: '1px solid #71717a', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontSize: '0.7rem', 
+                      color: '#71717a', 
+                      cursor: 'pointer',
+                      position: 'relative'
+                    }}
+                    onMouseEnter={() => setShowProductFocusTooltip(true)}
+                    onMouseLeave={() => setShowProductFocusTooltip(false)}
+                    onClick={() => setShowProductFocusTooltip(!showProductFocusTooltip)}
+                  >
+                    ?
+                    {showProductFocusTooltip && (
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '25px',
+                        left: '0',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #000000',
+                        padding: '12px',
+                        borderRadius: '8px',
+                        zIndex: 100,
+                        display: 'inline-block',
+                        width: 'max-content',
+                        maxWidth: '90vw',
+                        boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+                        fontSize: '0.75rem',
+                        color: '#000000',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        lineHeight: '1.4',
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word'
+                      }}>
+                        FinOps – cloud cost management<br />
+                        Sustainability – emissions measurement or reduction<br />
+                        Compliance – regulatory or security controls<br />
+                        Sovereignty – data residency or jurisdictional control
+                      </div>
+                    )}
+                  </div>
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                   {(() => {
