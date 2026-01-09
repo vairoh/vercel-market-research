@@ -399,14 +399,16 @@ export default function ResearchPage() {
                         padding: '12px',
                         borderRadius: '8px',
                         zIndex: 100,
-                        width: 'max-content',
-                        maxWidth: '450px',
+                        width: 'min(320px, 80vw)',
+                        maxWidth: '80vw',
                         boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
                         fontSize: '0.75rem',
                         color: '#000000',
                         fontStyle: 'normal',
+                        fontWeight: 400,
                         lineHeight: '1.4',
-                        whiteSpace: 'nowrap'
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word'
                       }}>
                         (e.g. FinOps, sovereign, etc.)
                       </div>
@@ -471,14 +473,16 @@ export default function ResearchPage() {
                         padding: '12px',
                         borderRadius: '8px',
                         zIndex: 100,
-                        width: 'max-content',
-                        maxWidth: '450px',
+                        width: 'min(320px, 80vw)',
+                        maxWidth: '80vw',
                         boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
                         fontSize: '0.75rem',
                         color: '#000000',
                         fontStyle: 'normal',
+                        fontWeight: 400,
                         lineHeight: '1.4',
-                        whiteSpace: 'nowrap'
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word'
                       }}>
                         Examples:<br />
                         • “Reduce cloud spend by 30%” → CFO / FinOps<br />
@@ -533,14 +537,16 @@ export default function ResearchPage() {
                         padding: '12px',
                         borderRadius: '8px',
                         zIndex: 100,
-                        width: 'max-content',
-                        maxWidth: '450px',
+                        width: 'min(320px, 80vw)',
+                        maxWidth: '80vw',
                         boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
                         fontSize: '0.75rem',
                         color: '#000000',
                         fontStyle: 'normal',
+                        fontWeight: 400,
                         lineHeight: '1.4',
-                        whiteSpace: 'nowrap'
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word'
                       }}>
                         (e.g. Amazon, Azure, GCP, STACKIT, OVH, Hetzner, Open Telekom Cloud, etc.)
                       </div>
@@ -770,14 +776,16 @@ export default function ResearchPage() {
                         padding: '12px',
                         borderRadius: '8px',
                         zIndex: 100,
-                        width: 'max-content',
-                        maxWidth: '450px',
+                        width: 'min(320px, 80vw)',
+                        maxWidth: '80vw',
                         boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
                         fontSize: '0.75rem',
                         color: '#000000',
                         fontStyle: 'normal',
+                        fontWeight: 400,
                         lineHeight: '1.4',
-                        whiteSpace: 'nowrap'
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word'
                       }}>
                         Focus on capabilities, automation level, pricing model, compliance posture, execution complexity, and customer experience.
                       </div>
