@@ -266,7 +266,7 @@ export default function ResearchPage() {
 
     const { error } = await supabase
       .from("research_submissions")
-      .insert([{
+      .upsert([{
         candidate_name: formData.candidate_name,
         candidate_email: formData.candidate_email,
         company_website: formData.company_website,
@@ -295,7 +295,7 @@ export default function ResearchPage() {
         evidence_links: formData.evidence_links,
         notes: formData.notes,
         keywords: formData.keywords.join(", ")
-      }]);
+      }], { onConflict: "company_key" });
 
     if (error) {
       alert("Error saving: " + error.message);

@@ -14,6 +14,13 @@ type ReserveResult = {
   reservation_expires_at: string;
 };
 
+const normalizeCompanyName = (name: string) => {
+  const lower = name.toLowerCase();
+  const noPunct = lower.replace(/[^a-z0-9\s]/g, " ");
+  const noSuffix = noPunct.replace(/\b(inc|incorporated|llc|ltd|limited|gmbh|ag|plc|corp|corporation|co|company|sa|sarl|bv|kg|oy|srl|spa|pte|pty|ab|as|nv|llp)\b/g, " ");
+  return noSuffix.replace(/\s+/g, " ").trim();
+};
+
 export default function ReservePage() {
   const navigate = useNavigate();
   const [companyName, setCompanyName] = useState("");
@@ -75,17 +82,26 @@ export default function ReservePage() {
       return;
     }
 
+    const normalizedName = normalizeCompanyName(name);
     setLoading(true);
     try {
       // 1. First, check if the current user already has an active reservation for this company
       const { data: existing, error: checkError } = await supabase
         .from("company_registry")
         .select("company_key, reserved_by")
+        .eq("company_name_normalized", normalizedName)
+        .maybeSingle();
+
+      const { data: legacyExisting, error: legacyError } = await supabase
+        .from("company_registry")
+        .select("company_key, reserved_by")
         .eq("company_name", name)
         .maybeSingle();
 
-      if (!checkError && existing && existing.reserved_by === (await supabase.auth.getUser()).data.user?.id) {
-        navigate(`/research?company_key=${existing.company_key}`, { replace: true });
+      const resolvedExisting = existing || legacyExisting;
+
+      if (resolvedExisting && resolvedExisting.reserved_by === (await supabase.auth.getUser()).data.user?.id) {
+        navigate(`/research?company_key=${resolvedExisting.company_key}`, { replace: true });
         return;
       }
 
