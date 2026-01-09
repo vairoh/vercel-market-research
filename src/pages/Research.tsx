@@ -12,6 +12,8 @@ const initialFormData = {
   target_customer_size: [] as string[],
   target_locations: [] as string[],
   implementation_details: "",
+  customer_names: [] as string[],
+  compliance_certifications: [] as string[],
   candidate_name: "",
   candidate_email: "",
   company_website: "",
@@ -41,6 +43,7 @@ export default function ResearchPage() {
   const [showCloudSupportTooltip, setShowCloudSupportTooltip] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
   const [cloudSupportInput, setCloudSupportInput] = useState("");
+  const [customerNameInput, setCustomerNameInput] = useState("");
 
   const [formData, setFormData] = useState({ ...initialFormData });
 
@@ -84,7 +87,9 @@ export default function ResearchPage() {
             keywords: Array.isArray(safeParsed.keywords) ? safeParsed.keywords : [],
             cloud_support: Array.isArray(safeParsed.cloud_support) ? safeParsed.cloud_support : [],
             target_customer_size: Array.isArray(safeParsed.target_customer_size) ? safeParsed.target_customer_size : [],
-            target_locations: Array.isArray(safeParsed.target_locations) ? safeParsed.target_locations : []
+            target_locations: Array.isArray(safeParsed.target_locations) ? safeParsed.target_locations : [],
+            customer_names: Array.isArray(safeParsed.customer_names) ? safeParsed.customer_names : [],
+            compliance_certifications: Array.isArray(safeParsed.compliance_certifications) ? safeParsed.compliance_certifications : []
           }));
         } catch {
           setFormData(prev => ({ ...initialFormData, ...prev }));
@@ -188,6 +193,21 @@ export default function ResearchPage() {
     handleInputChange('cloud_support', formData.cloud_support.filter((_, i) => i !== idx));
   };
 
+  const handleAddCustomerName = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const val = customerNameInput.trim().replace(/^#/, '');
+      if (val && !formData.customer_names.includes(val)) {
+        handleInputChange('customer_names', [...formData.customer_names, val]);
+      }
+      setCustomerNameInput("");
+    }
+  };
+
+  const removeCustomerName = (idx: number) => {
+    handleInputChange('customer_names', formData.customer_names.filter((_, i) => i !== idx));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep("SUBMISSION")) return;
@@ -213,6 +233,8 @@ export default function ResearchPage() {
         target_customer_size: Array.isArray(formData.target_customer_size) ? formData.target_customer_size.join(", ") : "",
         target_locations: Array.isArray(formData.target_locations) ? formData.target_locations.join(", ") : "",
         implementation_details: formData.implementation_details,
+        customer_names: Array.isArray(formData.customer_names) ? formData.customer_names.join(", ") : "",
+        compliance_certifications: Array.isArray(formData.compliance_certifications) ? formData.compliance_certifications.join(", ") : "",
         company_name: company.company_name,
         company_key: company.company_key,
         created_by: session?.user.id,
@@ -553,7 +575,7 @@ export default function ResearchPage() {
                   6. Primary target geographies for "{company?.company_name || 'the company'}"
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                  {["EU", "Asia", "US", "Global", "NA"].map(opt => (
+                  {["EU", "Asia", "US", "Global"].map(opt => (
                     <button key={opt} type="button" onClick={() => {
                       const current = Array.isArray(formData.target_locations) ? formData.target_locations : [];
                       const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
@@ -565,7 +587,7 @@ export default function ResearchPage() {
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
-                  7. Has "{company?.company_name || 'the company'}" implemented these capabilities in their product in any way? Describe in detail.
+                  7. Does "{company?.company_name || 'the company'}" mention or claim AI capabilities in their product? Describe in detail.
                 </label>
                 <textarea
                   value={formData.implementation_details}
@@ -573,6 +595,50 @@ export default function ResearchPage() {
                   placeholder="Share a detailed explanation..."
                   style={{ width: '100%', minHeight: '120px', borderRadius: '8px', padding: '1rem', border: '1px solid #e4e4e7' }}
                 />
+              </div>
+
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  8. Are any customer names publicly disclosed on the company’s website or LinkedIn page?
+                </label>
+                <div className={styles.keywordWrap}>
+                  <input 
+                    value={customerNameInput}
+                    onChange={e => setCustomerNameInput(e.target.value)}
+                    onKeyDown={handleAddCustomerName}
+                    placeholder="Type customer + Enter..."
+                    className={styles.keywordInput}
+                  />
+                  {formData.customer_names.length > 0 && (
+                    <div className={styles.chipGroup}>
+                      {formData.customer_names.map((kw, idx) => (
+                        <span key={idx} className={styles.chip}>
+                          #{kw}
+                          <button 
+                            type="button" 
+                            onClick={() => removeCustomerName(idx)} 
+                            className={styles.chipRemove}
+                          >×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#000', marginBottom: '0.75rem' }}>
+                  9. Does the company publicly reference any compliance or security certifications?
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  {["C5 (BSI)", "ISO (e.g., ISO/IEC 27001)", "SOC (SOC 1 / SOC 2)", "None"].map(opt => (
+                    <button key={opt} type="button" onClick={() => {
+                      const current = Array.isArray(formData.compliance_certifications) ? formData.compliance_certifications : [];
+                      const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
+                      handleInputChange('compliance_certifications', next);
+                    }} style={{ padding: '0.75rem 1.75rem', borderRadius: '30px', backgroundColor: Array.isArray(formData.compliance_certifications) && formData.compliance_certifications.includes(opt) ? '#000' : '#fff', color: Array.isArray(formData.compliance_certifications) && formData.compliance_certifications.includes(opt) ? '#fff' : '#000', border: '1px solid #000', cursor: 'pointer', fontWeight: 600 }}>{opt}</button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
