@@ -218,7 +218,6 @@ export default function ReservePage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
             <button
-              className="primaryButton"
               onClick={onReserve}
               disabled={loading || !!reserved}
               style={{ width: 'auto', borderRadius: '30px', height: '42px' }}
@@ -309,7 +308,6 @@ export default function ReservePage() {
 
             <div style={{ marginTop: '3rem', textAlign: 'center' }}>
               <button 
-                className="primaryButton"
                 onClick={() => navigate(`/research?company_key=${reserved.company_key}`)}
                 style={{ width: 'auto', borderRadius: '30px', padding: '1rem 3rem' }}
               >

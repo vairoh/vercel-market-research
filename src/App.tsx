@@ -76,7 +76,7 @@ function Login() {
                   style={{ borderRadius: '8px' }}
                 />
               </div>
-              <button className="primaryButton" onClick={sendMagicLink} style={{ width: 'auto', borderRadius: '30px' }}>
+              <button onClick={sendMagicLink} style={{ width: 'auto', borderRadius: '30px' }}>
                 Send Link
               </button>
               {error && (

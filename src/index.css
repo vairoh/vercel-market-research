@@ -56,11 +56,6 @@ body {
 }
 
 button {
-  font-family: inherit;
-  color: inherit;
-}
-
-.primaryButton {
   border-radius: 0px;
   border: 1px solid #000000;
   padding: 0.75rem 2rem;
@@ -68,6 +63,7 @@ button {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.15em;
+  font-family: inherit;
   background-color: #000000;
   color: #ffffff;
   cursor: pointer;
@@ -76,16 +72,16 @@ button {
   min-width: 140px;
 }
 
-.primaryButton:hover {
+button:hover {
   background-color: #ffffff;
   color: #000000;
 }
 
-.primaryButton:active {
+button:active {
   transform: scale(0.98);
 }
 
-.primaryButton:disabled {
+button:disabled {
   border-color: #e4e4e7;
   background-color: #f4f4f5;
   color: #a1a1aa;

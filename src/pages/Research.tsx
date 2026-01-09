@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import styles from "./Research.module.css";
 
 type Step = "GENERAL" | "ANALYSIS" | "SUBMISSION";
 
@@ -16,77 +17,6 @@ export default function ResearchPage() {
   const [showKeywordTooltip, setShowKeywordTooltip] = useState(false);
   const [showPersonaTooltip, setShowPersonaTooltip] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
-  const keywordStyles = {
-    wrap: {
-      display: "grid",
-      gap: "0.4rem",
-      marginBottom: "1rem"
-    },
-    board: {
-      display: "grid",
-      gap: "0.6rem",
-      padding: "0.7rem 0.8rem",
-      borderRadius: "10px",
-      background: "#ffffff",
-      border: "1px solid #e5e7eb"
-    },
-    inputRow: {
-      display: "flex"
-    },
-    chipsRow: {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: "0.5rem",
-      alignItems: "flex-start"
-    },
-    chip: {
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "flex-start",
-      gap: "0.35rem",
-      padding: "0.26rem 0.5rem",
-      borderRadius: "999px",
-      background: "#ffffff",
-      color: "#000000",
-      fontSize: "0.75rem",
-      fontWeight: 600,
-      border: "1px solid #000000",
-      whiteSpace: "nowrap",
-      flex: "0 0 auto",
-      width: "max-content",
-      maxWidth: "max-content",
-      minWidth: "unset",
-      alignSelf: "flex-start"
-    },
-    chipRemove: {
-      background: "transparent",
-      border: "none",
-      color: "#000000",
-      width: "16px",
-      height: "16px",
-      borderRadius: "50%",
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "center",
-      cursor: "pointer",
-      fontSize: "0.9rem",
-      lineHeight: 1,
-      padding: 0,
-      marginLeft: 0
-    },
-    empty: {
-      color: "#6b7280",
-      fontSize: "0.8rem"
-    },
-    input: {
-      border: "none",
-      outline: "none",
-      flex: 1,
-      fontSize: "0.9rem",
-      color: "#000000",
-      background: "transparent"
-    }
-  } as const;
 
   const [formData, setFormData] = useState({
     buyer_persona: [] as string[],
@@ -402,35 +332,28 @@ export default function ResearchPage() {
                     )}
                   </div>
                 </label>
-                <div style={keywordStyles.wrap}>
-                  <div style={keywordStyles.board}>
-                    <div style={keywordStyles.inputRow}>
-                      <input
-                        value={keywordInput}
-                        onChange={e => setKeywordInput(e.target.value)}
-                        onKeyDown={handleAddKeyword}
-                        placeholder="Type keyword + Enter..."
-                        style={keywordStyles.input}
-                      />
+                <div className={styles.keywordWrap}>
+                  <div className={styles.keywordRow}>
+                    <div className={styles.chipGroup}>
+                      {formData.keywords.map((kw, idx) => (
+                        <span key={idx} className={styles.chip}>
+                          #{kw}
+                          <button 
+                            type="button" 
+                            onClick={() => removeKeyword(idx)} 
+                            className={styles.chipRemove}
+                          >×</button>
+                        </span>
+                      ))}
                     </div>
-                    {formData.keywords.length > 0 && (
-                      <div style={keywordStyles.chipsRow}>
-                        {formData.keywords.map((kw, idx) => (
-                          <span key={idx} style={keywordStyles.chip}>
-                            #{kw}
-                            <button
-                              type="button"
-                              onClick={() => removeKeyword(idx)}
-                              style={keywordStyles.chipRemove}
-                              aria-label={`Remove ${kw}`}
-                            >
-                              ×
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    )}
                   </div>
+                  <input 
+                    value={keywordInput}
+                    onChange={e => setKeywordInput(e.target.value)}
+                    onKeyDown={handleAddKeyword}
+                    placeholder="Type keyword + Enter..."
+                    className={styles.keywordInput}
+                  />
                 </div>
               </div>
 
