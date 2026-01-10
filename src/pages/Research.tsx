@@ -97,35 +97,12 @@ export default function ResearchPage() {
         return;
       }
 
+      const submissionSelect =
+        "candidate_name, candidate_email, company_website, hq_country, year_founded, estimated_size, funding_stage, finops, keywords, buyer_persona, cloud_support, target_customer_size, target_locations, implementation_details, customer_names, compliance_certifications, pricing_models, pilot_offers, automation_level, action_responsibility, conclusion_summary, evidence_links, notes" as const;
+
       const { data: submission } = await supabase
         .from("research_submissions")
-        .select(
-          [
-            "candidate_name",
-            "candidate_email",
-            "company_website",
-            "hq_country",
-            "year_founded",
-            "estimated_size",
-            "funding_stage",
-            "finops",
-            "keywords",
-            "buyer_persona",
-            "cloud_support",
-            "target_customer_size",
-            "target_locations",
-            "implementation_details",
-            "customer_names",
-            "compliance_certifications",
-            "pricing_models",
-            "pilot_offers",
-            "automation_level",
-            "action_responsibility",
-            "conclusion_summary",
-            "evidence_links",
-            "notes"
-          ].join(", ")
-        )
+        .select(submissionSelect)
         .eq("company_key", companyKey)
         .eq("created_by", session.user.id)
         .maybeSingle();
