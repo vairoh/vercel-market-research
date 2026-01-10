@@ -63,7 +63,7 @@ export default function ReservePage() {
         .from("company_registry")
         .select("company_key, company_name, last_activity_at")
         .eq("reserved_by", session.user.id)
-        .gt("last_activity_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .gt("last_activity_at", new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
         .maybeSingle();
 
       if (!error && data) {
@@ -261,7 +261,7 @@ export default function ReservePage() {
               </h3>
               <p style={{ fontSize: '0.85rem', letterSpacing: '0.01em', fontWeight: 400, lineHeight: 1.6, color: '#3f3f46' }}>
                 To begin your analysis, please specify the company you will be researching. 
-                Your reservation ensures exclusive access to this data stream for the next 24 hours. 
+            Your reservation ensures exclusive access to this data stream for the next 48 hours. 
                 Please note that if no progress is detected within this timeframe, the system will 
                 automatically release the company for other researchers to acquire.
               </p>
