@@ -14,6 +14,12 @@ type ReserveResult = {
   reservation_expires_at: string;
 };
 
+type ExistingSubmission = {
+  company_key: string;
+  company_name: string;
+  created_at: string;
+};
+
 const normalizeCompanyName = (name: string) => {
   const lower = name.toLowerCase();
   const noPunct = lower.replace(/[^a-z0-9\s]/g, " ");
@@ -26,14 +32,29 @@ export default function ReservePage() {
   const [companyName, setCompanyName] = useState("");
   const [loading, setLoading] = useState(true);
   const [reserved, setReserved] = useState<ReserveResult | null>(null);
+  const [existingSubmission, setExistingSubmission] = useState<ExistingSubmission | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkActiveReservation = async () => {
+    const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate("/login");
+        return;
+      }
+
+      const { data: submission, error: submissionError } = await supabase
+        .from("research_submissions")
+        .select("company_key, company_name, created_at")
+        .eq("created_by", session.user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!submissionError && submission) {
+        setExistingSubmission(submission);
+        setLoading(false);
         return;
       }
 
@@ -52,7 +73,7 @@ export default function ReservePage() {
         setLoading(false);
       }
     };
-    checkActiveReservation();
+    init();
   }, [navigate]);
 
   // keep-alive every 60s once reserved
@@ -114,6 +135,10 @@ export default function ReservePage() {
         // Handle the specific error message from our SQL function
         if (error.message.includes('currently reserved')) {
           setErrorMsg("This company is already taken. Please search for a different company.");
+        } else if (error.message.includes('already been researched')) {
+          setErrorMsg("This company has already been researched. Please search for a different company.");
+        } else if (error.message.includes('already submitted')) {
+          setErrorMsg("You have already submitted a research report.");
         } else {
           setErrorMsg(error.message);
         }
@@ -201,140 +226,171 @@ export default function ReservePage() {
       </header>
 
       <div className="card" style={{ borderRadius: '16px' }}>
-        <div style={{ marginBottom: '2.5rem' }}>
-          <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', fontWeight: 700, color: '#000000' }}>
-            Select Research Company
-          </h3>
-          <p style={{ fontSize: '0.85rem', letterSpacing: '0.01em', fontWeight: 400, lineHeight: 1.6, color: '#3f3f46' }}>
-            To begin your analysis, please specify the company you will be researching. 
-            Your reservation ensures exclusive access to this data stream for the next 24 hours. 
-            Please note that if no progress is detected within this timeframe, the system will 
-            automatically release the company for other researchers to acquire.
-          </p>
-        </div>
-
-        <div style={{ display: "flex", justifyContent: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ flex: 1, minWidth: '280px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '0.5rem', 
-              fontSize: '0.65rem', 
-              fontWeight: 800,
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              color: '#71717a'
-            }}>
-              Target Company
-            </label>
-            <input
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="Name of the company you will research"
-              style={{ width: '100%', borderRadius: '8px' }}
-              disabled={loading || !!reserved}
-            />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-            <button
-              className={`${buttonStyles.primary} ${buttonStyles.pill}`}
-              onClick={onReserve}
-              disabled={loading || !!reserved}
-              style={{ width: 'auto', height: '42px' }}
-            >
-              {loading ? "Assigning..." : "Reserve Company"}
-            </button>
-          </div>
-        </div>
-
-        {errorMsg && (
-          <div style={{ 
-            marginTop: 32, 
-            padding: '1.25rem', 
-            border: "1px solid #fee2e2",
-            backgroundColor: '#fef2f2',
-            color: '#b91c1c',
-            fontSize: '0.85rem',
-            fontWeight: 500,
-            borderRadius: '12px',
-            lineHeight: 1.5,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem'
-          }}>
-            <span style={{ fontSize: '1.2rem' }}>•</span>
-            {errorMsg}
-          </div>
-        )}
-
-        {infoMsg && (
-          <div style={{ 
-            marginTop: 32, 
-            padding: 16, 
-            border: "1px solid #000000",
-            fontSize: '0.7rem',
-            fontFamily: 'JetBrains Mono',
-            textTransform: 'uppercase',
-            borderRadius: '8px'
-          }}>
-            SYSTEM_STATUS: {infoMsg}
-          </div>
-        )}
-
-        {reserved && (
-          <div style={{ 
-            marginTop: '5rem', 
-            padding: '3rem', 
-            border: "2px solid #000000",
-            position: 'relative',
-            borderRadius: '16px'
-          }}>
-            <div style={{ 
-              position: 'absolute', 
-              top: '-12px', 
-              left: '24px', 
-              background: '#fff', 
-              padding: '0 12px',
-              fontSize: '0.7rem',
-              fontWeight: 900,
-              letterSpacing: '0.25em'
-            }}>
-              SECURED_DATA_STREAM
+        {existingSubmission ? (
+          <div>
+            <div style={{ marginBottom: '2.5rem' }}>
+              <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', fontWeight: 700, color: '#000000' }}>
+                Analysis Already Submitted
+              </h3>
+              <p style={{ fontSize: '0.85rem', letterSpacing: '0.01em', fontWeight: 400, lineHeight: 1.6, color: '#3f3f46' }}>
+                You have already submitted a research report for {existingSubmission.company_name}. You can edit and resubmit the same company if needed.
+              </p>
             </div>
-            
-            <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#000000', letterSpacing: '-0.03em', textTransform: 'uppercase' }}>
-              {reserved.company_name}
-            </div>
-            
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-              gap: 40,
-              marginTop: 40,
-              paddingTop: 40,
-              borderTop: '1px solid #000000'
-            }}>
-              <div>
-                <div style={{ fontSize: '0.6rem', color: '#71717a', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 800 }}>Protocol // UID</div>
-                <code style={{ fontSize: '0.9rem', background: 'transparent', border: 'none', padding: 0 }}>{reserved.company_key}</code>
-              </div>
-              <div>
-                <div style={{ fontSize: '0.6rem', color: '#71717a', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 800 }}>Creation // UTC</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>
-                  {new Date(reserved.reserved_at).toISOString().split('T')[0]}
-                </div>
-              </div>
-            </div>
-
-            <div style={{ marginTop: '3rem', textAlign: 'center' }}>
-              <button 
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <button
                 className={`${buttonStyles.primary} ${buttonStyles.pill}`}
-                onClick={() => navigate(`/research?company_key=${reserved.company_key}`)}
-                style={{ width: 'auto', padding: '1rem 3rem' }}
+                onClick={() => navigate(`/research?company_key=${existingSubmission.company_key}`)}
+                style={{ width: 'auto', padding: '0.9rem 2.5rem' }}
               >
-                Continue to Research
+                Edit Submission
+              </button>
+              <button
+                className={`${buttonStyles.secondary} ${buttonStyles.pill}`}
+                onClick={onLogout}
+                style={{ width: 'auto', padding: '0.9rem 2.5rem' }}
+              >
+                Sign Out
               </button>
             </div>
           </div>
+        ) : (
+          <>
+            <div style={{ marginBottom: '2.5rem' }}>
+              <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', fontWeight: 700, color: '#000000' }}>
+                Select Research Company
+              </h3>
+              <p style={{ fontSize: '0.85rem', letterSpacing: '0.01em', fontWeight: 400, lineHeight: 1.6, color: '#3f3f46' }}>
+                To begin your analysis, please specify the company you will be researching. 
+                Your reservation ensures exclusive access to this data stream for the next 24 hours. 
+                Please note that if no progress is detected within this timeframe, the system will 
+                automatically release the company for other researchers to acquire.
+              </p>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ flex: 1, minWidth: '280px' }}>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem', 
+                  fontSize: '0.65rem', 
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  color: '#71717a'
+                }}>
+                  Target Company
+                </label>
+                <input
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="Name of the company you will research"
+                  style={{ width: '100%', borderRadius: '8px' }}
+                  disabled={loading || !!reserved}
+                />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                <button
+                  className={`${buttonStyles.primary} ${buttonStyles.pill}`}
+                  onClick={onReserve}
+                  disabled={loading || !!reserved}
+                  style={{ width: 'auto', height: '42px' }}
+                >
+                  {loading ? "Assigning..." : "Reserve Company"}
+                </button>
+              </div>
+            </div>
+
+            {errorMsg && (
+              <div style={{ 
+                marginTop: 32, 
+                padding: '1.25rem', 
+                border: "1px solid #fee2e2",
+                backgroundColor: '#fef2f2',
+                color: '#b91c1c',
+                fontSize: '0.85rem',
+                fontWeight: 500,
+                borderRadius: '12px',
+                lineHeight: 1.5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem'
+              }}>
+                <span style={{ fontSize: '1.2rem' }}>•</span>
+                {errorMsg}
+              </div>
+            )}
+
+            {infoMsg && (
+              <div style={{ 
+                marginTop: 32, 
+                padding: 16, 
+                border: "1px solid #000000",
+                fontSize: '0.7rem',
+                fontFamily: 'JetBrains Mono',
+                textTransform: 'uppercase',
+                borderRadius: '8px'
+              }}>
+                SYSTEM_STATUS: {infoMsg}
+              </div>
+            )}
+
+            {reserved && (
+              <div style={{ 
+                marginTop: '5rem', 
+                padding: '3rem', 
+                border: "2px solid #000000",
+                position: 'relative',
+                borderRadius: '16px'
+              }}>
+                <div style={{ 
+                  position: 'absolute', 
+                  top: '-12px', 
+                  left: '24px', 
+                  background: '#fff', 
+                  padding: '0 12px',
+                  fontSize: '0.7rem',
+                  fontWeight: 900,
+                  letterSpacing: '0.25em'
+                }}>
+                  SECURED_DATA_STREAM
+                </div>
+                
+                <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#000000', letterSpacing: '-0.03em', textTransform: 'uppercase' }}>
+                  {reserved.company_name}
+                </div>
+                
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                  gap: 40,
+                  marginTop: 40,
+                  paddingTop: 40,
+                  borderTop: '1px solid #000000'
+                }}>
+                  <div>
+                    <div style={{ fontSize: '0.6rem', color: '#71717a', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 800 }}>Protocol // UID</div>
+                    <code style={{ fontSize: '0.9rem', background: 'transparent', border: 'none', padding: 0 }}>{reserved.company_key}</code>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.6rem', color: '#71717a', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 800 }}>Creation // UTC</div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>
+                      {new Date(reserved.reserved_at).toISOString().split('T')[0]}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+                  <button 
+                    className={`${buttonStyles.primary} ${buttonStyles.pill}`}
+                    onClick={() => navigate(`/research?company_key=${reserved.company_key}`)}
+                    style={{ width: 'auto', padding: '1rem 3rem' }}
+                  >
+                    Continue to Research
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

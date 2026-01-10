@@ -52,11 +52,26 @@ export default function ResearchPage() {
   const [reservationValid, setReservationValid] = useState(false);
   const [reservationError, setReservationError] = useState<string | null>(null);
   const [submissionComplete, setSubmissionComplete] = useState(false);
+  const [editingSubmission, setEditingSubmission] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
   const [cloudSupportInput, setCloudSupportInput] = useState("");
   const [customerNameInput, setCustomerNameInput] = useState("");
 
   const [formData, setFormData] = useState({ ...initialFormData });
+
+  const parseList = (value?: string | null) => {
+    if (!value) return [];
+    return value
+      .split(",")
+      .map(item => item.trim())
+      .filter(Boolean);
+  };
+
+  const toList = (value: unknown) => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string") return parseList(value);
+    return [];
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -71,25 +86,59 @@ export default function ResearchPage() {
         return;
       }
 
-      const { data, error } = await supabase
+      const { data: companyRow, error: companyError } = await supabase
         .from("company_registry")
         .select("*")
         .eq("company_key", companyKey)
         .single();
 
-      if (error || !data) {
+      if (companyError || !companyRow) {
         navigate("/reserve");
         return;
       }
 
-      const isOwner = data.reserved_by && data.reserved_by === session.user.id;
-      const isReserved = data.reservation_status === "reserved";
-      const expiresAt = data.reservation_expires_at ? new Date(data.reservation_expires_at).getTime() : 0;
-      const notExpired = expiresAt > Date.now();
+      const { data: submission } = await supabase
+        .from("research_submissions")
+        .select(
+          [
+            "candidate_name",
+            "candidate_email",
+            "company_website",
+            "hq_country",
+            "year_founded",
+            "estimated_size",
+            "funding_stage",
+            "finops",
+            "keywords",
+            "buyer_persona",
+            "cloud_support",
+            "target_customer_size",
+            "target_locations",
+            "implementation_details",
+            "customer_names",
+            "compliance_certifications",
+            "pricing_models",
+            "pilot_offers",
+            "automation_level",
+            "action_responsibility",
+            "conclusion_summary",
+            "evidence_links",
+            "notes"
+          ].join(", ")
+        )
+        .eq("company_key", companyKey)
+        .eq("created_by", session.user.id)
+        .maybeSingle();
 
-      if (!isOwner || !isReserved || !notExpired) {
+      const isOwner = companyRow.reserved_by && companyRow.reserved_by === session.user.id;
+      const isReserved = companyRow.reservation_status === "reserved";
+      const expiresAt = companyRow.reservation_expires_at ? new Date(companyRow.reservation_expires_at).getTime() : 0;
+      const notExpired = expiresAt > Date.now();
+      const isReservationValid = !!isOwner && isReserved && notExpired;
+
+      if (!submission && !isReservationValid) {
         let message = "Reservation unavailable. Please reserve this company again.";
-        if (!isOwner && data.reserved_by) {
+        if (!isOwner && companyRow.reserved_by) {
           message = "The company you are trying to reserve is already taken by another user. Please try another company name.";
         } else if (!isReserved) {
           message = "This reservation is no longer active. Please reserve the company again.";
@@ -102,40 +151,82 @@ export default function ResearchPage() {
         return;
       }
 
-      setReservationValid(true);
-      setCompany(data);
-      
+      setReservationValid(isReservationValid);
+      setCompany(companyRow);
+      setEditingSubmission(!!submission);
+
+      const baseData = submission
+        ? {
+            ...initialFormData,
+            candidate_name: submission.candidate_name ?? "",
+            candidate_email: submission.candidate_email || session.user.email || "",
+            company_website: submission.company_website ?? "",
+            hq_country: submission.hq_country ?? "",
+            year_founded: submission.year_founded ?? "",
+            estimated_size: submission.estimated_size !== null && submission.estimated_size !== undefined ? String(submission.estimated_size) : "",
+            funding_stage: submission.funding_stage ?? "",
+            finops: parseList(submission.finops),
+            keywords: parseList(submission.keywords),
+            buyer_persona: parseList(submission.buyer_persona),
+            cloud_support: parseList(submission.cloud_support),
+            target_customer_size: parseList(submission.target_customer_size),
+            target_locations: parseList(submission.target_locations),
+            implementation_details: submission.implementation_details ?? "",
+            customer_names: parseList(submission.customer_names),
+            compliance_certifications: parseList(submission.compliance_certifications),
+            pricing_models: parseList(submission.pricing_models),
+            pilot_offers: parseList(submission.pilot_offers),
+            automation_level: parseList(submission.automation_level),
+            action_responsibility: parseList(submission.action_responsibility),
+            conclusion_summary: submission.conclusion_summary ?? "",
+            evidence_links: submission.evidence_links ?? "",
+            notes: submission.notes ?? ""
+          }
+        : {
+            ...initialFormData,
+            candidate_email: session.user.email || ""
+          };
+
       const saved = localStorage.getItem(`research_progress_${companyKey}`);
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
           const safeParsed = parsed && typeof parsed === "object" ? parsed : {};
-          setFormData(prev => ({
+          const merged = { ...baseData, ...safeParsed };
+          setFormData({
             ...initialFormData,
-            ...prev,
-            ...safeParsed,
-            finops: Array.isArray(safeParsed.finops) ? safeParsed.finops : [],
-            buyer_persona: Array.isArray(safeParsed.buyer_persona) ? safeParsed.buyer_persona : [],
-            keywords: Array.isArray(safeParsed.keywords) ? safeParsed.keywords : [],
-            cloud_support: Array.isArray(safeParsed.cloud_support) ? safeParsed.cloud_support : [],
-            target_customer_size: Array.isArray(safeParsed.target_customer_size) ? safeParsed.target_customer_size : [],
-            target_locations: Array.isArray(safeParsed.target_locations) ? safeParsed.target_locations : [],
-            customer_names: Array.isArray(safeParsed.customer_names) ? safeParsed.customer_names : [],
-            compliance_certifications: Array.isArray(safeParsed.compliance_certifications) ? safeParsed.compliance_certifications : [],
-            pricing_models: Array.isArray(safeParsed.pricing_models) ? safeParsed.pricing_models : [],
-            pilot_offers: Array.isArray(safeParsed.pilot_offers) ? safeParsed.pilot_offers : [],
-            automation_level: Array.isArray(safeParsed.automation_level) ? safeParsed.automation_level : [],
-            action_responsibility: Array.isArray(safeParsed.action_responsibility) ? safeParsed.action_responsibility : [],
-            conclusion_summary: typeof safeParsed.conclusion_summary === "string" ? safeParsed.conclusion_summary : ""
-          }));
+            ...merged,
+            finops: toList(merged.finops),
+            buyer_persona: toList(merged.buyer_persona),
+            keywords: toList(merged.keywords),
+            cloud_support: toList(merged.cloud_support),
+            target_customer_size: toList(merged.target_customer_size),
+            target_locations: toList(merged.target_locations),
+            customer_names: toList(merged.customer_names),
+            compliance_certifications: toList(merged.compliance_certifications),
+            pricing_models: toList(merged.pricing_models),
+            pilot_offers: toList(merged.pilot_offers),
+            automation_level: toList(merged.automation_level),
+            action_responsibility: toList(merged.action_responsibility),
+            conclusion_summary: typeof merged.conclusion_summary === "string" ? merged.conclusion_summary : "",
+            evidence_links: typeof merged.evidence_links === "string" ? merged.evidence_links : "",
+            notes: typeof merged.notes === "string" ? merged.notes : "",
+            candidate_name: typeof merged.candidate_name === "string" ? merged.candidate_name : "",
+            candidate_email: typeof merged.candidate_email === "string" ? merged.candidate_email : session.user.email || "",
+            company_website: typeof merged.company_website === "string" ? merged.company_website : "",
+            hq_country: typeof merged.hq_country === "string" ? merged.hq_country : "",
+            year_founded: typeof merged.year_founded === "string" ? merged.year_founded : "",
+            estimated_size: typeof merged.estimated_size === "string" || typeof merged.estimated_size === "number"
+              ? String(merged.estimated_size)
+              : "",
+            funding_stage: typeof merged.funding_stage === "string" ? merged.funding_stage : "",
+            implementation_details: typeof merged.implementation_details === "string" ? merged.implementation_details : ""
+          });
         } catch {
-          setFormData(prev => ({ ...initialFormData, ...prev }));
+          setFormData(baseData);
         }
       } else {
-        setFormData(prev => ({
-          ...prev,
-          candidate_email: session.user.email || ""
-        }));
+        setFormData(baseData);
       }
       setLoading(false);
     };
@@ -295,7 +386,11 @@ export default function ResearchPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!reservationValid || !company?.company_key) {
+    if (!company?.company_key) {
+      setReservationError("Your reservation is not active. Please return to Reserve and claim the company again.");
+      return;
+    }
+    if (!reservationValid && !editingSubmission) {
       setReservationError("Your reservation is not active. Please return to Reserve and claim the company again.");
       return;
     }
@@ -316,11 +411,13 @@ export default function ResearchPage() {
       return;
     }
 
-    const { error: keepAliveError } = await supabase.rpc("keep_alive_company", {
-      p_company_key: company.company_key,
-    });
-    if (keepAliveError) {
-      console.error("keep_alive_company error:", keepAliveError);
+    if (reservationValid) {
+      const { error: keepAliveError } = await supabase.rpc("keep_alive_company", {
+        p_company_key: company.company_key,
+      });
+      if (keepAliveError) {
+        console.error("keep_alive_company error:", keepAliveError);
+      }
     }
 
     const { error } = await supabase
