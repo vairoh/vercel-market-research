@@ -34,6 +34,7 @@ export default function ReservePage() {
   const [reserved, setReserved] = useState<ReserveResult | null>(null);
   const [existingSubmission, setExistingSubmission] = useState<ExistingSubmission | null>(null);
   const [showBriefing, setShowBriefing] = useState(false);
+  const [pendingRedirect, setPendingRedirect] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
@@ -55,9 +56,6 @@ export default function ReservePage() {
 
       if (!submissionError && submission) {
         setExistingSubmission(submission);
-        setShowBriefing(false);
-        setLoading(false);
-        return;
       }
 
       // Check if this user already has an active, non-expired reservation
@@ -68,13 +66,13 @@ export default function ReservePage() {
         .gt("last_activity_at", new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
         .maybeSingle();
 
-      if (!error && data) {
+      if (!submission && !error && data) {
         setInfoMsg(`RESTORING SESSION FOR ${data.company_name.toUpperCase()}...`);
-        navigate(`/research?company_key=${data.company_key}`, { replace: true });
-      } else {
-        setShowBriefing(true);
-        setLoading(false);
+        setPendingRedirect(`/research?company_key=${data.company_key}`);
       }
+
+      setShowBriefing(true);
+      setLoading(false);
     };
     init();
   }, [navigate]);
@@ -256,7 +254,12 @@ export default function ReservePage() {
               <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
                 <button
                   className={`${buttonStyles.primary} ${buttonStyles.pill}`}
-                  onClick={() => setShowBriefing(false)}
+                  onClick={() => {
+                    setShowBriefing(false);
+                    if (pendingRedirect) {
+                      navigate(pendingRedirect, { replace: true });
+                    }
+                  }}
                   style={{ padding: '0.75rem 2.5rem' }}
                 >
                   Continue
