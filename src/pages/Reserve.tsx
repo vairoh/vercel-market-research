@@ -33,6 +33,7 @@ export default function ReservePage() {
   const [loading, setLoading] = useState(true);
   const [reserved, setReserved] = useState<ReserveResult | null>(null);
   const [existingSubmission, setExistingSubmission] = useState<ExistingSubmission | null>(null);
+  const [showBriefing, setShowBriefing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
@@ -54,6 +55,7 @@ export default function ReservePage() {
 
       if (!submissionError && submission) {
         setExistingSubmission(submission);
+        setShowBriefing(false);
         setLoading(false);
         return;
       }
@@ -70,6 +72,7 @@ export default function ReservePage() {
         setInfoMsg(`RESTORING SESSION FOR ${data.company_name.toUpperCase()}...`);
         navigate(`/research?company_key=${data.company_key}`, { replace: true });
       } else {
+        setShowBriefing(true);
         setLoading(false);
       }
     };
@@ -226,6 +229,42 @@ export default function ReservePage() {
       </header>
 
       <div className="card" style={{ borderRadius: '16px' }}>
+        {showBriefing && !existingSubmission && (
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(255,255,255,0.96)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px'
+          }}>
+            <div className="card" style={{ maxWidth: '760px', width: '100%', borderRadius: '16px' }}>
+              <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.2em', fontWeight: 800, color: '#71717a', marginBottom: '1.25rem' }}>
+                Mission Brief
+              </div>
+              <p style={{ marginTop: 0, marginBottom: '1rem', fontSize: '0.95rem', color: '#000' }}>
+                Atomity is a Europe-first, compliance-first cloud intelligence platform that unifies FinOps, compliance, and sustainability, and orchestrates enterprise workloads in real time across the most cost-efficient, sovereign, and low-carbon clouds.
+              </p>
+              <p style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '0.95rem', color: '#000' }}>
+                Your task is to independently identify a company offering a FinOps or cloud optimization product that could reasonably compete in the same market as Atomity, and complete the full analysis using only publicly available sources. All claims must be supported with evidence links.
+              </p>
+              <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#000' }}>
+                Deadline: Sunday, 18 January 2026, 23:59 CET.
+              </div>
+              <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
+                <button
+                  className={`${buttonStyles.primary} ${buttonStyles.pill}`}
+                  onClick={() => setShowBriefing(false)}
+                  style={{ padding: '0.75rem 2.5rem' }}
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {existingSubmission ? (
           <div>
             <div style={{ marginBottom: '2.5rem' }}>
