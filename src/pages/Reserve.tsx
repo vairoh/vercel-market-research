@@ -227,7 +227,7 @@ export default function ReservePage() {
       </header>
 
       <div className="card" style={{ borderRadius: '16px' }}>
-        {showBriefing && !existingSubmission && (
+        {showBriefing && (
           <div style={{
             position: 'fixed',
             inset: 0,

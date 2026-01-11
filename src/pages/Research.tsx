@@ -53,6 +53,7 @@ export default function ResearchPage() {
   const [reservationError, setReservationError] = useState<string | null>(null);
   const [submissionComplete, setSubmissionComplete] = useState(false);
   const [editingSubmission, setEditingSubmission] = useState(false);
+  const [showResearchBriefing, setShowResearchBriefing] = useState(true);
   const [keywordInput, setKeywordInput] = useState("");
   const [cloudSupportInput, setCloudSupportInput] = useState("");
   const [customerNameInput, setCustomerNameInput] = useState("");
@@ -465,6 +466,42 @@ export default function ResearchPage() {
       </header>
 
       <div className="card" style={{ borderRadius: '16px' }}>
+        {showResearchBriefing && !submissionComplete && (
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(255,255,255,0.96)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px'
+          }}>
+            <div className="card" style={{ maxWidth: '760px', width: '100%', borderRadius: '16px' }}>
+              <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.2em', fontWeight: 800, color: '#71717a', marginBottom: '1.25rem' }}>
+                Mission Brief
+              </div>
+              <p style={{ marginTop: 0, marginBottom: '1rem', fontSize: '0.95rem', color: '#000' }}>
+                Atomity is a Europe-first, compliance-first cloud intelligence platform that unifies FinOps, compliance, and sustainability, and orchestrates enterprise workloads in real time across the most cost-efficient, sovereign, and low-carbon clouds.
+              </p>
+              <p style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '0.95rem', color: '#000' }}>
+                Your task is to independently identify a company offering a FinOps or cloud optimization product that could reasonably compete in the same market as Atomity, and complete the full analysis using only publicly available sources. All claims must be supported with evidence links.
+              </p>
+              <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#000' }}>
+                Deadline: Sunday, 18 January 2026, 23:59 CET.
+              </div>
+              <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
+                <button
+                  className={`${buttonStyles.primary} ${buttonStyles.pill}`}
+                  onClick={() => setShowResearchBriefing(false)}
+                  style={{ padding: '0.75rem 2.5rem' }}
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {submissionComplete && (
           <div style={{
             position: 'fixed',
