@@ -248,6 +248,9 @@ export default function ReservePage() {
               <p style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '0.95rem', color: '#000' }}>
                 Your task is to independently identify a company offering a FinOps or cloud optimization product that could reasonably compete in the same market as Atomity, and complete the full analysis using only publicly available sources. All claims must be supported with evidence links.
               </p>
+              <p style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '0.95rem', color: '#000' }}>
+                Out of scope: Cloud providers themselves (hyperscalers), hardware or semiconductor vendors, and consulting-only firms.
+              </p>
               <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#000' }}>
                 Deadline: Sunday, 18 January 2026, 23:59 CET.
               </div>
