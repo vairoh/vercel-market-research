@@ -304,14 +304,20 @@ export default function ReservePage() {
               <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', fontWeight: 700, color: '#000000' }}>
                 Select Research Company
               </h3>
-          <p style={{ fontSize: '0.85rem', letterSpacing: '0.01em', fontWeight: 400, lineHeight: 1.6, color: '#3f3f46' }}>
-            To begin your analysis, please specify the company you will be researching.
-            You may reserve only one company at a time, so choose carefully.
-            Your reservation ensures exclusive access to this data stream for the next 48 hours.
-            If no progress is detected within this timeframe, the system will automatically
-            release the company for other researchers to acquire.
-            After you submit, you can only edit this same company and cannot start a new one.
-          </p>
+          <div style={{ fontSize: '0.85rem', letterSpacing: '0.01em', fontWeight: 400, lineHeight: 1.6, color: '#3f3f46' }}>
+            <p style={{ margin: 0, marginBottom: '0.75rem' }}>
+              To begin your analysis, please specify the company you will be researching.
+              You may reserve only one company at a time, so choose carefully.
+            </p>
+            <p style={{ margin: 0, marginBottom: '0.75rem' }}>
+              Your reservation ensures exclusive access to this data stream for the next 48 hours.
+              If no progress is detected within this timeframe, the system will automatically
+              release the company for other researchers to acquire.
+            </p>
+            <p style={{ margin: 0 }}>
+              After you submit, you can only edit this same company and cannot start a new one.
+            </p>
+          </div>
             </div>
 
             <div style={{ display: "flex", justifyContent: 'center', flexWrap: 'wrap', gap: '1rem' }}>
