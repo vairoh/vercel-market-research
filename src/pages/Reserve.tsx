@@ -251,8 +251,8 @@ export default function ReservePage() {
               <p style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '0.95rem', color: '#000' }}>
                 Out of scope: Cloud providers themselves (hyperscalers), hardware or semiconductor vendors, and consulting-only firms.
               </p>
-              <p style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '0.95rem', color: '#000', fontWeight: 600 }}>
-                Important: The use of ChatGPT or any other generative AI tools for researching companies, markets, competitors, or analysis is strictly prohibited. Any submission found to be generated or materially assisted by LLMs will be automatically disqualified. Candidates must be able to fully explain and defend their work in a live discussion.
+              <p style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '0.95rem', color: '#000' }}>
+                <strong>Important:</strong> The use of ChatGPT or any other generative AI tools for researching companies, markets, competitors, or analysis is strictly prohibited. Any submission found to be generated or materially assisted by LLMs will be automatically disqualified. Candidates must be able to fully explain and defend their work in a live discussion.
               </p>
               <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#000' }}>
                 Deadline: Monday, 10 February 2026, 23:59 CET.
