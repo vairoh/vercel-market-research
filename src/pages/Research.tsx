@@ -54,6 +54,7 @@ export default function ResearchPage() {
   const [submissionComplete, setSubmissionComplete] = useState(false);
   const [editingSubmission, setEditingSubmission] = useState(false);
   const [showResearchBriefing, setShowResearchBriefing] = useState(true);
+  const [showTaskBrief, setShowTaskBrief] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
   const [cloudSupportInput, setCloudSupportInput] = useState("");
   const [customerNameInput, setCustomerNameInput] = useState("");
@@ -461,9 +462,72 @@ export default function ResearchPage() {
       </div>
 
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid #000' }}>
-        <h2 style={{ margin: 0, fontSize: '0.9rem', textTransform: 'uppercase', fontWeight: 800 }}>Terminal // {company?.company_name}</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h2 style={{ margin: 0, fontSize: '0.9rem', textTransform: 'uppercase', fontWeight: 800 }}>Task Brief</h2>
+          <button
+            type="button"
+            onClick={() => setShowTaskBrief(true)}
+            style={{
+              width: '18px',
+              height: '18px',
+              borderRadius: '50%',
+              border: '1px solid #71717a',
+              background: 'transparent',
+              color: '#71717a',
+              fontSize: '0.7rem',
+              lineHeight: 1,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            aria-label="Open task brief"
+          >
+            ?
+          </button>
+        </div>
         <div style={{ fontSize: '0.7rem', color: '#71717a' }}>Step: {currentStep}</div>
       </header>
+      {showTaskBrief && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(255,255,255,0.96)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px'
+          }}
+          onClick={() => setShowTaskBrief(false)}
+        >
+          <div
+            className="card"
+            style={{ maxWidth: '760px', width: '100%', borderRadius: '16px' }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.2em', fontWeight: 800, color: '#71717a', marginBottom: '1.25rem' }}>
+              Task Brief
+            </div>
+            <p style={{ marginTop: 0, marginBottom: '1rem', fontSize: '0.95rem', color: '#000' }}>
+              Atomity is a Europe-first, compliance-first cloud intelligence platform that unifies FinOps, compliance, and sustainability, and orchestrates enterprise workloads in real time across the most cost-efficient, sovereign, and low-carbon clouds.
+            </p>
+            <p style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '0.95rem', color: '#000' }}>
+              Your task is to independently identify a company offering a FinOps or cloud optimization product that could reasonably compete in the same market as Atomity, and complete the full analysis using only publicly available sources. All claims must be supported with evidence links.
+            </p>
+            <p style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '0.95rem', color: '#000' }}>
+              Out of scope: Cloud providers themselves (hyperscalers), hardware or semiconductor vendors, and consulting-only firms.
+            </p>
+            <p style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '0.95rem', color: '#000' }}>
+              <strong>Important:</strong> The use of ChatGPT or any other generative AI tools for researching companies, markets, competitors, or analysis is strictly prohibited. Any submission found to be generated or materially assisted by LLMs will be automatically disqualified. Candidates must be able to fully explain and defend their work in a live discussion.
+            </p>
+            <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#000' }}>
+              Deadline: Monday, 10 February 2026, 23:59 CET.
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="card" style={{ borderRadius: '16px' }}>
         {showResearchBriefing && !submissionComplete && (
